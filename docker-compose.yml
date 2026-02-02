@@ -1,0 +1,75 @@
+services:
+  # PHP-FPM Service
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: akbarfood-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - vendor:/var/www/vendor
+    networks:
+      - akbarfood-network
+    depends_on:
+      - db
+
+  # Nginx Service
+  web:
+    image: nginx:stable-alpine
+    container_name: akbarfood-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - akbarfood-network
+    depends_on:
+      - app
+
+  # MariaDB Service
+  db:
+    image: mariadb:latest
+    container_name: akbarfood-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-akbarfood}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_USER: ${DB_USERNAME:-akbarfood_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - akbarfood-network
+
+  # phpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: akbarfood-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USERNAME:-akbarfood_user}
+      PMA_PASSWORD: ${DB_PASSWORD:-secret}
+    networks:
+      - akbarfood-network
+    depends_on:
+      - db
+
+networks:
+  akbarfood-network:
+    driver: bridge
+
+volumes:
+  vendor:
+    driver: local
+  dbdata:
+    driver: local
