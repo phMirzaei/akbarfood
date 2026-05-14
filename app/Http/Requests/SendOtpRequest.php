@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterUserRequest extends FormRequest
+class SendOtpRequest extends FormRequest
 {
 
     public function authorize(): bool
@@ -13,7 +13,7 @@ class RegisterUserRequest extends FormRequest
     }
 
 
-    public function rules(): array
+    public function rules(): arrayg
     {
         return [
             'name' => 'required|string|min:3|max:100|regex:/^[\p{Arabic}\s]+$/u',

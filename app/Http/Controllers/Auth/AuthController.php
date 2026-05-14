@@ -1,22 +1,23 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
-use App\Http\Requests\RegisterUserRequest;
-use App\Http\Requests\verifyOTPRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\SendOtpRequest;
+use App\Http\Requests\VerifyOTPRequest;
 use App\Models\OTP;
 use App\Models\User;
-use http\Env\Response;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Carbon;
 
 
 class AuthController extends Controller
 {
-    public function register(RegisterUserRequest $request): JsonResponse
+    public function register(SendOtpRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $code = random_int(1000, 9999);
@@ -34,7 +35,7 @@ class AuthController extends Controller
 
 
         Http::
-        post("https://telegram.craftsmanshipbuff.com:8443/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendMessage", [
+        post("https://api.telegram.org/bot" . config('services.telegram.bot_token') . "/sendMessage", [
             'chat_id' => '-1003740180374',
             'text' => "$code   کد تاییدیه شما به شماره ی : $phone"
         ]);
@@ -44,7 +45,7 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function verifyOTP(verifyOTPRequest $request): JsonResponse
+    public function verifyOTP(VerifyOTPRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $otp = OTP::where('phone', $validated['phone'])->first();
@@ -55,14 +56,16 @@ class AuthController extends Controller
             ]);
         }
 
+        $user = User::create([
+            'phone' => $otp->phone,
+            'name' => $otp->name
+        ]);
         $otp->delete();
-        $user = User::firstOrCreate(
-            ['phone' => $otp->phone],
-            ['name' => $otp->name]
-        );
+
         $token = JWTAuth::fromUser($user);
         return response()->json([
             'message' => 'ثبت نام شما با موفقیت انجام شد.',
+            'user'=> $user->name,
             'token' => $token,
         ]);
     }
