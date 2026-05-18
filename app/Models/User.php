@@ -18,18 +18,8 @@ class User extends Authenticatable implements JWTSubject{
     public $timestamps = false;
 
 
-        protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+        protected $hidden = [];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
     public function getJWTIdentifier()
     {
         return $this->getKey();

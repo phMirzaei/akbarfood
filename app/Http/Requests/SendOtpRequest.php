@@ -13,10 +13,10 @@ class SendOtpRequest extends FormRequest
     }
 
 
-    public function rules(): arrayg
+    public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:100|regex:/^[\p{Arabic}\s]+$/u',
+            'name' => 'required|string|min:3|max:100|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'phone' => 'required|digits:11|regex:/^09\d{9}$/'
         ];
 
