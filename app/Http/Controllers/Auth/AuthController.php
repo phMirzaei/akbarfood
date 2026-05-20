@@ -29,14 +29,16 @@ class AuthController extends Controller
 
         if ($userExists) {
             return response()->json([
-                'message' => 'This phone number already exists'
+                'message' => 'این شماره قبلا ثبت شده است.'
             ], 409);
         }
-        Otp::create([
-            'phone' => $phone,
-            'name' => $validated['name'],
-            'code' => $hashedCode,
-        ]);
+        Otp::updateOrCreate(
+            ['phone' => $phone],
+            [
+                'name' => $validated['name'],
+                'code' => $hashedCode,
+            ]
+        );
 
 
         try {
