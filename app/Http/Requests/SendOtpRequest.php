@@ -17,7 +17,7 @@ class SendOtpRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:3|max:100|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
-            'phone' => 'required|digits:11|regex:/^09\d{9}$/'
+            'phone' => 'required|digits:11|regex:/^09\d{9}$/',
         ];
 
     }

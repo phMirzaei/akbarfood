@@ -7,6 +7,7 @@ use App\Http\Requests\SendOtpRequest;
 use App\Http\Requests\VerifyOTPRequest;
 use App\Models\Otp;
 use App\Models\User;
+use http\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -32,14 +33,21 @@ class AuthController extends Controller
                 'message' => 'این شماره قبلا ثبت شده است.'
             ], 409);
         }
+        $otp = OTP::where('phone', $validated['phone'])->first();
+        $attempts = $otp?->attempts ?? 0;
+        if ($attempts>=4) {
+            return response()->json([
+                'message'=>'تعداد دفعات مجاز درخواست کد به پایان رسیده دقایقی دیگر مجدد امتحان کنید.'
+            ],429);
+        }
         Otp::updateOrCreate(
             ['phone' => $phone],
             [
                 'name' => $validated['name'],
                 'code' => $hashedCode,
+                'attempts' => $attempts+ 1,
             ]
         );
-
 
         try {
             Http::post("https://api.telegram.org/bot" . config('services.telegram.bot_token') . "/sendMessage", [
