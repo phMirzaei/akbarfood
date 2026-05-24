@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SendOtpRequest;
-use App\Http\Requests\VerifyOTPRequest;
+use App\Http\Requests\VerifyOtpRequest;
 use App\Models\Otp;
 use App\Models\User;
-use http\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,19 +32,13 @@ class AuthController extends Controller
                 'message' => 'این شماره قبلا ثبت شده است.'
             ], 409);
         }
-        $otp = OTP::where('phone', $validated['phone'])->first();
-        $attempts = $otp?->attempts ?? 0;
-        if ($attempts>=4) {
-            return response()->json([
-                'message'=>'تعداد دفعات مجاز درخواست کد به پایان رسیده دقایقی دیگر مجدد امتحان کنید.'
-            ],429);
-        }
+
         Otp::updateOrCreate(
             ['phone' => $phone],
             [
                 'name' => $validated['name'],
                 'code' => $hashedCode,
-                'attempts' => $attempts+ 1,
+                'attempts' => 0,
             ]
         );
 
@@ -69,15 +62,23 @@ class AuthController extends Controller
 
     }
 
-    public function verifyOTP(VerifyOTPRequest $request): JsonResponse
+    public function verifyOtp(VerifyOtpRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $otp = Otp::where('phone', $validated['phone'])->first();
 
-        if (!$otp||!Hash::check($validated['code'], $otp->code)) {
+        if (!$otp) {
+            return response()->json(['message' => 'کد وارد شده صحیح نیست.'], 401);
+        }
+
+        if ($otp->attempts >= 4) {
             return response()->json([
-                'message' => 'کد وارد شده صحیح نیست.',
-            ],401);
+                'message' => 'تعداد دفعات مجاز به پایان رسید. لطفا یک کد جدید درخواست کنید.',
+            ], 429);
+        }
+        if (!Hash::check($validated['code'], $otp->code)) {
+            $otp->increment('attempts');
+            return response()->json(['message' => 'کد وارد شده صحیح نیست.'], 401);
         }
         $user=DB::transaction(function () use ($otp) {
             $user = User::create([

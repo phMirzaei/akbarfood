@@ -1,1 +1,3 @@
 *.sqlite*
+# IDE backup files
+*~
