@@ -25,3 +25,5 @@ Thumbs.db
 docker-compose.override.yml
 *.sql
 *.sqlite
+# IDE backup files
+*~
