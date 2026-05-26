@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Http;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 
 class AuthController extends Controller
@@ -25,6 +26,9 @@ class AuthController extends Controller
         $hashedCode = Hash::make($code);
         $phone = $validated['phone'];
 
+        $key="otp_sent:{$phone}";
+
+
         $userExists = User::where('phone', $phone)->exists();
 
         if ($userExists) {
@@ -32,13 +36,18 @@ class AuthController extends Controller
                 'message' => 'این شماره قبلا ثبت شده است.'
             ], 409);
         }
-
+        if(Cache::has($key)){
+            return Response()->json([
+                'message' => 'لطفاً 1 دقیقه صبر کنید و دوباره تلاش کنید.'
+            ],429);
+        }
         Otp::updateOrCreate(
             ['phone' => $phone],
             [
                 'name' => $validated['name'],
                 'code' => $hashedCode,
                 'attempts' => 0,
+                'expired_at'=> now()->addMinutes(10),
             ]
         );
 
@@ -47,6 +56,8 @@ class AuthController extends Controller
                 'chat_id' => '-1003740180374',
                 'text' => "$code   کد تاییدیه شما به شماره ی : $phone"
             ])->throw();
+            Cache::put($key,true,now()->addMinute());
+
             return response()->json([
                 'message' => 'کد تایید ارسال شد',
             ], 200);
@@ -59,7 +70,6 @@ class AuthController extends Controller
         }
 
 
-
     }
 
     public function verifyOtp(VerifyOtpRequest $request): JsonResponse
@@ -68,12 +78,25 @@ class AuthController extends Controller
         $otp = Otp::where('phone', $validated['phone'])->first();
 
         if (!$otp) {
-            return response()->json(['message' => 'کد وارد شده صحیح نیست.'], 401);
+            return response()->json([
+                'message' => 'کد وارد شده صحیح نیست.'
+            ], 401);
         }
 
-        if ($otp->attempts >= 4) {
+        if(now()->gt($otp->expired_at))  {
+            $otp->delete();
             return response()->json([
-                'message' => 'تعداد دفعات مجاز به پایان رسید. لطفا یک کد جدید درخواست کنید.',
+                'message' => 'کد تایید منقضی شده است. لطفاً کد جدید درخواست دهید.',
+            ], 410);
+
+        }
+
+        if ($otp->attempts >= 3) {
+            $otp->update([
+                'blocked_until' => now()->addHours(12),
+            ]);
+            return response()->json([
+                'message' => 'تعداد دفعات مجاز به پایان رسید. به مدت 12 ساعت بلاک شدید.',
             ], 429);
         }
         if (!Hash::check($validated['code'], $otp->code)) {
@@ -93,7 +116,6 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'ثبت نام شما با موفقیت انجام شد.',
-            'user'=> $user->name,
             'token' => $token,
         ]);
     }
