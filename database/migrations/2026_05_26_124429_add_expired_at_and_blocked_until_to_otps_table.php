@@ -19,7 +19,7 @@ return new class extends Migration
     {
         Schema::table('otps', function (Blueprint $table) {
             $table->dropColumn('expired_at');
-            $table->dropColumn('blocked_until')->nullable();
+            $table->dropColumn('blocked_until');
         });
     }
 };

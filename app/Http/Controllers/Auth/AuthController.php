@@ -25,6 +25,13 @@ class AuthController extends Controller
         $code = random_int(1000, 9999);
         $hashedCode = Hash::make($code);
         $phone = $validated['phone'];
+        $otp=Otp::where('phone',$phone)->first();
+
+        if ($otp->blocked_until?->isFuture()) {
+            return response()->json([
+                'message' => 'حساب شما به دلیل تلاش‌های ناموفق تا ۱۲ ساعت مسدود است.'
+            ], 429);
+        }
 
         $key="otp_sent:{$phone}";
 
@@ -83,13 +90,19 @@ class AuthController extends Controller
             ], 401);
         }
 
-        if(now()->gt($otp->expired_at))  {
+        if ($otp->expired_at?->isPast()) {
             $otp->delete();
             return response()->json([
                 'message' => 'کد تایید منقضی شده است. لطفاً کد جدید درخواست دهید.',
             ], 410);
 
         }
+
+        if ($otp->blocked_until?->isFuture()) {
+            return response()->json([
+                'message' => 'حساب شما تا 12 ساعت مسدود است. لطفاً بعداً دوباره تلاش کنید.',
+            ], 429);
+      }
 
         if ($otp->attempts >= 3) {
             $otp->update([
