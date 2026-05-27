@@ -27,7 +27,7 @@ class AuthController extends Controller
         $phone = $validated['phone'];
         $otp=Otp::where('phone',$phone)->first();
 
-        if ($otp->blocked_until?->isFuture()) {
+        if ($otp?->blocked_until?->isFuture()) {
             return response()->json([
                 'message' => 'حساب شما به دلیل تلاش‌های ناموفق تا ۱۲ ساعت مسدود است.'
             ], 429);
