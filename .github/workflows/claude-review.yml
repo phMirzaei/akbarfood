@@ -23,6 +23,7 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: '--model claude-sonnet-4-6'
           classify_inline_comments: 'true'
+          use_sticky_comment: 'true'
           prompt: |
             You are reviewing a pull request on themiladmirza/akbarfood, a Laravel 12 PHP project.
             The author is an early-career engineer whose first language is Persian (Farsi).
@@ -45,16 +46,61 @@ jobs:
 
             # What to post
 
-            - Post **inline comments on specific lines** for each finding, using the GitHub API
-              via your github tool. Anchor every comment to the exact line in the changed file.
+            - Post **inline comments on specific lines** for each NEW finding, anchored to the
+              exact line in the changed file.
             - Only post **required** findings (bugs, security issues, regressions, dead code,
               files that shouldn't be committed). **Skip style/formatting nits aggressively** —
               we keep comment volume low so signal-to-noise stays high.
-            - If the PR is clean, post one short top-level approval comment instead — don't
-              invent findings.
             - Before posting, read existing PR review comments. **Do not repeat a finding that
-              already exists** (this matters because `synchronize` events re-run this action on
-              every push).
+              already exists.**
+            - **Always update the sticky summary comment** (described below) — even when the PR
+              is clean. The sticky comment is your "status board."
+
+            # The sticky summary comment
+
+            On every run, post or update a single PR-level summary comment (the action's
+            `use_sticky_comment` keeps this as one comment that updates in place). Its content:
+
+            **First-pass review (no prior Claude comments on this PR):**
+
+            ```
+            ## 🤖 Claude review
+
+            Found N issue(s). See inline comments below for details and suggested fixes.
+
+            (Or, if clean:)
+            Looks good — no required findings. Nice work!
+            ```
+
+            **Follow-up review (you've commented on this PR before):**
+
+            ```
+            ## 🤖 Claude review — follow-up
+
+            | Finding | Status |
+            |---|---|
+            | 🚨 Original headline of finding 1 | ✅ Fixed |
+            | 🐛 Original headline of finding 2 | ⚠️ Partial — *one-line note on what's still missing* |
+            | 🧹 Original headline of finding 3 | ❌ Not addressed |
+            | 🔁 New regression introduced by the fix | 🆕 New (see inline comment) |
+
+            (Summary sentence: "All previous findings addressed, one new regression — see below."
+            Or: "Ready to merge.")
+            ```
+
+            Statuses:
+            - ✅ **Fixed** — the prior finding is fully resolved in the new code.
+            - ⚠️ **Partial** — the fix addressed part of the issue but introduced a new bug or
+              missed a case. Add a one-line note saying *what* is still wrong.
+            - ❌ **Not addressed** — the prior finding is still present unchanged.
+            - 🆕 **New** — a brand-new finding from this push (not seen in a prior review).
+
+            **Check whether a "fix" introduced a new bug elsewhere** — multiple prior PRs on
+            this repo fixed one direction and broken another. The status table is where you call
+            those out as ⚠️ Partial with a note.
+
+            If the PR is now clean (all previous findings fixed, no new ones), say so explicitly
+            — the author should feel acknowledged when they nail it.
 
             # Comment template
 
