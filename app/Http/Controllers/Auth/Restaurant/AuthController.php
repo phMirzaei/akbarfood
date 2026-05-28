@@ -17,8 +17,13 @@ class AuthController extends Controller
 
         $path=$validated['permit_scan']->store('permits','public');
         $validated['permit_scan']=$path;
-
-        Restaurant::create($validated);
+        try {
+            Restaurant::create($validated);
+        }
+        catch (\Throwable $exception){
+            \Storage::disk('public')->delete($path);
+            throw $exception;
+        }
 
         return response()->json([
             'message'=>'ثبت نام با موفقیت انجام شد.',
