@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('street');
             $table->string('alley');
             $table->string('management_full_name');
-            $table->string('management_phone');
+            $table->string('phone')->unique();
             $table->timestamps();
         });
     }
