@@ -8,7 +8,8 @@ Route::prefix('auth')->group(function () {
     Route::post('request-otp', [AuthController::class, 'requestOtp']);
     Route::post('verify-otp',  [AuthController::class, 'verifyOtp']);
     Route::prefix('restaurant')->group(function () {
-        Route::post('register-restaurant', [AuthRestaurant::class, 'registerRestaurant']);
+        Route::post('register-restaurant', [AuthRestaurant::class, 'sendRegistrationVerification']);
+        Route::post('verify-restaurant', [AuthRestaurant::class, 'verifyRestaurantRegistrationOtp']);
     });
 });
 

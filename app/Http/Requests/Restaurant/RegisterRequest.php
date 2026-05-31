@@ -23,7 +23,7 @@ class RegisterRequest extends FormRequest
             'street'=>'required|string|min:2|max:30|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'alley'=>'required|string|min:2|max:30|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'management_full_name'=>'required|string|min:3|max:50|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
-            'management_phone'=>'required|digits:11|regex:/^09\d{9}$/',
+            'phone'=>'required|digits:11|regex:/^09\d{9}$/',
         ];
     }
     public function messages(): array{
