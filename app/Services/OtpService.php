@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
 
 class OtpService
 {
-    public function send(string $phone,array $payload=[]): void
+    public function send(string $phone, array $payload = []): void
     {
 
         $key = "otp_sent:{$phone}";
@@ -44,7 +44,7 @@ class OtpService
         Http::post(
             "https://api.telegram.org/bot" . config('services.telegram.bot_token') . "/sendMessage",
             [
-                'chat_id' => '-1003740180374',
+                'chat_id' => config('services.telegram.chat_id'),
                 'text' => "$code کد تاییدیه شما به شماره : $phone"
             ]
         )->throw();
@@ -52,7 +52,7 @@ class OtpService
         Cache::put($key, true, now()->addMinute());
     }
 
-    public function verify(string $phone,string $code): Otp
+    public function verify(string $phone, string $code): Otp
     {
         $otp = Otp::where('phone', $phone)->first();
 
@@ -66,16 +66,18 @@ class OtpService
         if ($otp?->blocked_until?->isFuture()) {
             throw new OtpBlockedException("به دلیل تلاش‌های ناموفق، تا ۱۲ ساعت مسدود هستید.");
         }
-        if ($otp->attempts >= 3) {
-            $otp->update([
-                'blocked_until' => now()->addHours(12),
-            ]);
-            throw new OtpTooManyAttemptsException("تعداد دفعات مجاز به پایان رسید. به مدت 12 ساعت بلاک شدید.");
-        }
         if (!Hash::check($code, $otp->code)) {
+            $newAttempts = $otp->attempts + 1;
+            if ($newAttempts >= 3) {
+                $otp->update([
+                    'attempts' => $newAttempts,
+                    'blocked_until' => now()->addHours(12),
+                ]);
+                throw new OtpTooManyAttemptsException("تعداد دفعات مجاز به پایان رسید. به مدت 12 ساعت بلاک شدید.");
+            }
             $otp->increment('attempts');
             throw new OtpNotFoundException("کد وارد شده صحیح نیست.");
         }
         return $otp;
     }
-}
+    }
