@@ -45,6 +45,7 @@ class AuthController extends Controller
                 'alley' => $validated['alley'],
                 'management_full_name' => $validated['management_full_name'],
                 'phone' => $validated['phone'],
+                'status' => 'pending',
             ];
 
 
@@ -92,6 +93,7 @@ class AuthController extends Controller
                         'alley' => $payload['alley'],
                         'management_full_name' => $payload['management_full_name'],
                         'phone' => $payload['phone'],
+                        'status'=>'pending',
                     ]
                 );
                 $otp->delete();

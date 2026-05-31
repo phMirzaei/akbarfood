@@ -11,7 +11,7 @@ class Restaurant extends Authenticatable implements JWTSubject
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'permit_scan', 'landline_number', 'city', 'street', 'alley', 'management_full_name', 'phone'];
+    protected $fillable = ['name', 'permit_scan', 'landline_number', 'city', 'street', 'alley', 'management_full_name', 'phone','status'];
 
     public function getJWTIdentifier()
     {
