@@ -9,7 +9,6 @@ use App\Exceptions\OtpTooManyAttemptsException;
 use App\Exceptions\OtpTooManyRequestException;
 use App\Exceptions\UserAlreadyExistsException;
 use App\Models\Otp;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
@@ -32,14 +31,6 @@ class OtpService
         }
 
         $code = random_int(1000, 9999);
-
-        Http::post(
-            "https://api.telegram.org/bot" . config('services.telegram.bot_token') . "/sendMessage",
-            [
-                'chat_id' => '-1003740180374',
-                'text' => "$code کد تاییدیه شما به شماره : $phone"
-            ]
-        )->throw();
         Otp::updateOrCreate(
             ['phone' => $phone],
             [
@@ -49,6 +40,14 @@ class OtpService
                 'payload' => $payload
             ]
         );
+
+        Http::post(
+            "https://api.telegram.org/bot" . config('services.telegram.bot_token') . "/sendMessage",
+            [
+                'chat_id' => '-1003740180374',
+                'text' => "$code کد تاییدیه شما به شماره : $phone"
+            ]
+        )->throw();
 
         Cache::put($key, true, now()->addMinute());
     }

@@ -30,6 +30,7 @@ class AuthController extends Controller
         try {
             $managerExists=Restaurant::where('phone',$validated['phone'])->exists();
             if($managerExists){
+                \Storage::disk('public')->delete($path);
                 return response()->json([
                     'message' => 'این شماره قبلا ثبت شده است.'
                 ], 409);
