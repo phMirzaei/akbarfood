@@ -31,7 +31,7 @@ class OperatorMiddleware
 
         $hasAccess = $restaurant->users()
             ->where('user_id', $user->id)
-            ->wherePivotIn('role', ['operator', 'manager'])
+            ->wherePivot('role', 'operator')
             ->exists();
 
         if (! $hasAccess) {
