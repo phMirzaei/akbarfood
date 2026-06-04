@@ -31,6 +31,11 @@ class RestaurantApprovalController extends Controller
     }
     public function rejected(Restaurant $restaurant,TelegramService $telegramService): JsonResponse
     {
+        if ($restaurant->status !== 'pending') {
+            return response()->json([
+                'message' => 'این درخواست قبلاً بررسی شده است.'
+            ], 409);
+        }
         $restaurant->delete();
         $telegramService->sendMessage('درخواست ثبت رستوران شما رد شد.');
 

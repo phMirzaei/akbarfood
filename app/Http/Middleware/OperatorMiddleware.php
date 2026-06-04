@@ -12,7 +12,11 @@ class OperatorMiddleware
     public function handle(Request $request, Closure $next): JsonResponse
     {
         $restaurant = $request->route('restaurant');
-
+        if (!$restaurant) {
+            return response()->json([
+                'message' => 'رستوران یافت نشد.'
+            ], 404);
+        }
         $isOperator = $restaurant->users()
             ->where('user_id', auth()->id())
             ->wherePivot('role', 'operator')

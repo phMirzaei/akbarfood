@@ -59,7 +59,7 @@ class RestaurantController extends Controller
                     'message' => 'شما اجازه انجام این عملیات را ندارید.'
                 ], 403);
             }
-            $restaurant->users()->attach($request->user_id, [
+            $restaurant->users()->syncWithoutDetaching($request->user_id, [
                 'role' => 'operator'
             ]);
 
