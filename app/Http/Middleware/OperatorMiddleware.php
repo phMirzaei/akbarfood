@@ -17,7 +17,7 @@ class OperatorMiddleware
         if (! $restaurant) {
 
             $isOperator = $user->restaurants()
-                ->wherePivotIn('role', ['operator', 'manager'])
+                ->wherePivotIn('role', ['operator'])
                 ->exists();
 
             if (! $isOperator) {
