@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('restaurant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->unique(['restaurant_id', 'user_id']);
             $table->enum('role',['manager','operator','user'])->default('user');
             $table->timestamps();
         });

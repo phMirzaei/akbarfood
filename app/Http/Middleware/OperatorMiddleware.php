@@ -9,24 +9,37 @@ use Illuminate\Http\JsonResponse;
 
 class OperatorMiddleware
 {
-    public function handle(Request $request, Closure $next): JsonResponse
+    public function handle($request, Closure $next)
     {
+        $user = auth()->user();
         $restaurant = $request->route('restaurant');
-        if (!$restaurant) {
-            return response()->json([
-                'message' => 'رستوران یافت نشد.'
-            ], 404);
+
+        if (! $restaurant) {
+
+            $isOperator = $user->restaurants()
+                ->wherePivotIn('role', ['operator', 'manager'])
+                ->exists();
+
+            if (! $isOperator) {
+                return response()->json([
+                    'message' => 'شما اجازه دسترسی ندارید'
+                ], 403);
+            }
+
+            return $next($request);
         }
-        $isOperator = $restaurant->users()
-            ->where('user_id', auth()->id())
-            ->wherePivot('role', 'operator')
+
+        $hasAccess = $restaurant->users()
+            ->where('user_id', $user->id)
+            ->wherePivotIn('role', ['operator', 'manager'])
             ->exists();
 
-        if (! $isOperator) {
+        if (! $hasAccess) {
             return response()->json([
                 'message' => 'شما اجازه دسترسی ندارید'
             ], 403);
         }
+
         return $next($request);
     }
 }
