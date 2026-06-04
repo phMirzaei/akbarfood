@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Auth\Restaurant;
+namespace App\Http\Controllers\Restaurants;
 
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant\Restaurant;
 use App\Services\TelegramService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
-class OperatorRestaurantController extends Controller
+class RestaurantApprovalController extends Controller
 {
     public function pending(): JsonResponse
     {
@@ -17,7 +15,6 @@ class OperatorRestaurantController extends Controller
             Restaurant::where('status', 'pending')->get()
         );
     }
-
     public function approved(Restaurant $restaurant,TelegramService $telegramService): JsonResponse
     {
         if ($restaurant->status !== 'pending') {
@@ -32,17 +29,13 @@ class OperatorRestaurantController extends Controller
         $telegramService->sendMessage("درخواست ثبت رستوران شما تایید شد.");
         return response()->json(['message' => 'تایید شد.'], 200);
     }
-
     public function rejected(Restaurant $restaurant,TelegramService $telegramService): JsonResponse
     {
-        $restaurant->update([
-            'status' => 'rejected'
-        ]);
-         Restaurant::where('status', 'rejected')->delete();
-
+        $restaurant->delete();
         $telegramService->sendMessage('درخواست ثبت رستوران شما رد شد.');
 
-        return response()->json(['message' => ' رد شد.'], 422);
+        return response()->json(['message' => ' رد شد.'], 200);
 
     }
+
 }

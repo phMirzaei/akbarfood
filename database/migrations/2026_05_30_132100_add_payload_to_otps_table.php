@@ -11,6 +11,7 @@ return new class extends Migration
     {
         Schema::table('otps', function (Blueprint $table) {
             $table->json('payload')->nullable();
+            $table->dropColumn('name');
         });
     }
 
@@ -18,6 +19,7 @@ return new class extends Migration
     {
         Schema::table('otps', function (Blueprint $table) {
             $table->dropColumn('payload');
+            $table->string('name');
         });
     }
 };

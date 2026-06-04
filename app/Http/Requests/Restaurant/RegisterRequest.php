@@ -22,8 +22,6 @@ class RegisterRequest extends FormRequest
             'city' => 'required|string|min:2|max:19|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'street' => 'required|string|min:2|max:30|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'alley' => 'required|string|min:2|max:30|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
-            'management_full_name' => 'required|string|min:3|max:50|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
-            'phone' => 'required|digits:11|regex:/^09\d{9}$/',
         ];
     }
 
