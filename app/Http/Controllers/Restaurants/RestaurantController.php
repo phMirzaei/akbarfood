@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Restaurant\RegisterRequest;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class RestaurantController extends Controller
 {
