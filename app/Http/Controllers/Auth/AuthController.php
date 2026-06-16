@@ -81,7 +81,6 @@ class AuthController extends Controller
                 $otp->delete();
                 return $user;
             });
-//                $token = JWTAuth::fromUser($user);
             $token = auth()->login($user);
             return response()->json([
                 'message' => 'ثبت نام شما با موفقیت انجام شد.',
