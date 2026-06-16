@@ -11,9 +11,9 @@ Route::prefix('auth')->group(function () {
     Route::post('verify-otp',  [AuthController::class, 'verifyOtp']);
 });
 
-Route::middleware('auth:api')->prefix('restaurants')->group(function () {
+Route::middleware('auth:api')->group(function () {
 
-    Route::post('register', [RestaurantController::class, 'store']);
+    Route::post('retaurant-register', [RestaurantController::class, 'store']);
     Route::middleware('admin')->group(function () {
         Route::post('users/{userId}/add-operator', [OperatorController::class, 'addOperator']);
     });

