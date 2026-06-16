@@ -23,7 +23,7 @@ class OperatorMiddleware
         }
 
         return response()->json([
-            'message' => 'دسترسی غیرمجاز. نقش فعلی شما در دیتابیس: ' . ($user->role ?? 'ندارد')
+            'message' => 'دسترسی غیرمجاز.'
         ], 403);
     }
 }

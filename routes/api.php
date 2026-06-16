@@ -13,7 +13,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:api')->group(function () {
 
-    Route::post('retaurant-register', [RestaurantController::class, 'store']);
+    Route::post('restaurant-register', [RestaurantController::class, 'store']);
     Route::middleware('admin')->group(function () {
         Route::post('users/{userId}/add-operator', [OperatorController::class, 'addOperator']);
     });
