@@ -7,7 +7,6 @@ use App\Exceptions\OtpExpiredException;
 use App\Exceptions\OtpNotFoundException;
 use App\Exceptions\OtpTooManyAttemptsException;
 use App\Exceptions\OtpTooManyRequestException;
-use App\Exceptions\UserAlreadyExistsException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SendOtpRequest;
 use App\Http\Requests\VerifyOtpRequest;
@@ -15,13 +14,7 @@ use App\Models\User;
 use App\Services\OtpService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
-
 
 class AuthController extends Controller
 {
@@ -36,7 +29,7 @@ class AuthController extends Controller
                     'message' => 'این شماره قبلا ثبت شده است.'
                 ], 409);
             }
-            $payload=[
+            $payload = [
                 'name' => $request->validated('name'),
             ];
             $otpService->send($phone, $payload);
@@ -50,13 +43,11 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'به دلیل تلاش‌های ناموفق، تا ۱۲ ساعت مسدود هستید.',
             ], 403);
-        }
-        catch (OtpTooManyRequestException $e) {
+        } catch (OtpTooManyRequestException $e) {
             return response()->json([
                 'message' => 'لطفاً 1 دقیقه صبر کنید و دوباره تلاش کنید.',
             ], 429);
-        }
-        catch (\Throwable $e) {
+        } catch (\Throwable $e) {
 
             report($e);
 
@@ -83,16 +74,15 @@ class AuthController extends Controller
                 $otp->delete();
                 return $user;
             });
-                $token = JWTAuth::fromUser($user);
-
-                return response()->json([
-                    'message' => 'ثبت نام شما با موفقیت انجام شد.',
-                    'token' => $token,
-                ]);
+            $token = auth()->login($user);
+            return response()->json([
+                'message' => 'ثبت نام شما با موفقیت انجام شد.',
+                'token' => $token,
+            ]);
 
         } catch (OtpNotFoundException $e) {
             return response()->json([
-                'message'=> 'کد وارد شده صحیح نیست.',
+                'message' => 'کد وارد شده صحیح نیست.',
             ], 422);
         } catch (OtpExpiredException $e) {
             return response()->json([
@@ -106,8 +96,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'تعداد دفعات مجاز به پایان رسید. به مدت 12 ساعت بلاک شدید.'
             ], 403);
-        }
-        catch (\Throwable $e) {
+        } catch (\Throwable $e) {
 
             report($e);
 

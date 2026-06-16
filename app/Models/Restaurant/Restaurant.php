@@ -3,23 +3,18 @@
 namespace App\Models\Restaurant;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\User;
 
-class Restaurant extends Authenticatable implements JWTSubject
-{
+class Restaurant extends Model{
     use HasFactory;
 
-    protected $fillable = ['name', 'permit_scan', 'landline_number', 'city', 'street', 'alley', 'management_full_name', 'phone'];
+    protected $fillable = ['name', 'permit_scan', 'landline_number', 'city', 'street', 'alley', 'status'];
 
-    public function getJWTIdentifier()
+    public function users(): BelongsToMany
     {
-        return $this->getKey();
-    }
-
-    public function getJWTCustomClaims(): array
-    {
-        return [];
+        return $this->belongsToMany(User::class, 'restaurant_users')
+            ->withPivot('role');
     }
 }

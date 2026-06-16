@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->string('phone',11)->unique();
             $table->string('name')->nullable();
+            $table->enum('role',['user','admin','operator'])->default('user');
         });
     }
 

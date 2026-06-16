@@ -15,9 +15,14 @@ use Illuminate\Support\Facades\Cache;
 
 class OtpService
 {
+    public function __construct(
+        private TelegramService $telegramService
+    )
+    {
+    }
+
     public function send(string $phone, array $payload = []): void
     {
-
         $key = "otp_sent:{$phone}";
 
         if (Cache::has($key)) {
@@ -41,13 +46,7 @@ class OtpService
             ]
         );
 
-        Http::post(
-            "https://api.telegram.org/bot" . config('services.telegram.bot_token') . "/sendMessage",
-            [
-                'chat_id' => config('services.telegram.chat_id'),
-                'text' => "$code کد تاییدیه شما به شماره : $phone"
-            ]
-        )->throw();
+        $this->telegramService->sendMessage("$code کد تاییدیه شما به شماره : $phone");
 
         Cache::put($key, true, now()->addMinute());
     }
@@ -80,4 +79,4 @@ class OtpService
         }
         return $otp;
     }
-    }
+}
