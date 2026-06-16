@@ -27,7 +27,7 @@ class RestaurantController extends Controller
                 'status' => 'pending',
             ]);
             $restaurant->users()->attach(auth()->id(), [
-                'role' => 'manager'
+                'role' => 'owner'
             ]);
             return response()->json([
                 'message' => 'درخواست شما برای ثبت رستوران در حال بررسی است.',
@@ -43,39 +43,5 @@ class RestaurantController extends Controller
         }
     }
 
-    public function addOperator(Request $request, $restaurantId)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id'
-        ]);
-        try {
-            $restaurant = Restaurant::findOrFail($restaurantId);
-
-             $isManager=$restaurant->users()
-                ->where('user_id', auth()->id())
-                ->wherePivot('role', 'manager')
-                ->exists();
-            if (!$isManager) {
-                return response()->json([
-                    'message' => 'شما اجازه انجام این عملیات را ندارید.'
-                ], 403);
-            }
-            $restaurant->users()->syncWithoutDetaching([
-                $request->user_id => ['role' => 'operator']
-            ]);
-
-            return response()->json([
-                'message' => 'اوبراتور با موفقیت اضافه شد.'
-            ]);
-        } catch (\Throwable $e) {
-            report($e);
-            return response()->json([
-                'message' => 'خطای سرور.'
-            ], 500);
-
-        }
-
-
-    }
 
 }

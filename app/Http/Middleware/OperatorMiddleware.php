@@ -11,35 +11,19 @@ class OperatorMiddleware
 {
     public function handle($request, Closure $next)
     {
+
         $user = auth()->user();
-        $restaurant = $request->route('restaurant');
 
-        if (! $restaurant) {
+        if ($user) {
+            $user->refresh();
+        }
 
-            $isOperator = $user->restaurants()
-                ->wherePivotIn('role', ['operator'])
-                ->exists();
-
-            if (! $isOperator) {
-                return response()->json([
-                    'message' => 'شما اجازه دسترسی ندارید'
-                ], 403);
-            }
-
+        if ($user && ($user->role === 'operator' || $user->role === 'admin')) {
             return $next($request);
         }
 
-        $hasAccess = $restaurant->users()
-            ->where('user_id', $user->id)
-            ->wherePivot('role', 'operator')
-            ->exists();
-
-        if (! $hasAccess) {
-            return response()->json([
-                'message' => 'شما اجازه دسترسی ندارید'
-            ], 403);
-        }
-
-        return $next($request);
+        return response()->json([
+            'message' => 'دسترسی غیرمجاز. نقش فعلی شما در دیتابیس: ' . ($user->role ?? 'ندارد')
+        ], 403);
     }
 }
