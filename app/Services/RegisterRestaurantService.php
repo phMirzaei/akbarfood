@@ -4,14 +4,15 @@ namespace App\Services;
 
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class RegisterRestaurantService
 {
     public function execute(array $data, int $ownerId)
     {
-        $path = $data['permit_scan']->store('permits', 'public');
-        $data['permit_scan'] = $path;
-        DB::transaction(function () use ($data, $ownerId, $path) {
+        DB::transaction(function () use ($data, $ownerId) {
+            $path = $data['permit_scan']->store('permits', 'public');
+            DB::afterRollBack(fn()=>Storage::disk('public')->delete($path));
             $restaurant = Restaurant::create([
                 'name' => $data['name'],
                 'permit_scan' => $path,
