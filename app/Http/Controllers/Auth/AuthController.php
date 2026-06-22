@@ -13,7 +13,6 @@ use App\Http\Requests\VerifyOtpRequest;
 use App\Models\User;
 use App\Services\OtpService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
