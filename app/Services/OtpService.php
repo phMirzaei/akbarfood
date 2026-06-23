@@ -7,8 +7,11 @@ use App\Exceptions\OtpExpiredException;
 use App\Exceptions\OtpNotFoundException;
 use App\Exceptions\OtpTooManyAttemptsException;
 use App\Exceptions\OtpTooManyRequestException;
+use App\Exceptions\PhoneAlreadyRegisteredException;
 use App\Exceptions\UserAlreadyExistsException;
 use App\Models\Otp;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
@@ -23,16 +26,19 @@ class OtpService
 
     public function send(string $phone, array $payload = []): void
     {
+        if (User::where('phone', $phone)->exists()) {
+            throw new PhoneAlreadyRegisteredException();
+        }
         $key = "otp_sent:{$phone}";
 
         if (Cache::has($key)) {
-            throw new OtpTooManyRequestException("لطفاً 1 دقیقه صبر کنید و دوباره تلاش کنید.");
+            throw new OtpTooManyRequestException();
         }
 
         $otp = Otp::where('phone', $phone)->first();
 
         if ($otp?->blocked_until?->isFuture()) {
-            throw new OtpBlockedException("به دلیل تلاش‌های ناموفق، تا ۱۲ ساعت مسدود هستید.");
+            throw new OtpBlockedException();
         }
 
         $code = random_int(1000, 9999);
@@ -56,14 +62,14 @@ class OtpService
         $otp = Otp::where('phone', $phone)->first();
 
         if (!$otp) {
-            throw new OtpNotFoundException("کد وارد شده صحیح نیست.");
+            throw new OtpNotFoundException();
         }
         if ($otp->expired_at?->isPast()) {
             $otp->delete();
-            throw new OtpExpiredException("کد تایید منقضی شده است. لطفاً کد جدید درخواست دهید.");
+            throw new OtpExpiredException();
         }
         if ($otp?->blocked_until?->isFuture()) {
-            throw new OtpBlockedException("به دلیل تلاش‌های ناموفق، تا ۱۲ ساعت مسدود هستید.");
+            throw new OtpBlockedException();
         }
         if (!Hash::check($code, $otp->code)) {
             $newAttempts = $otp->attempts + 1;
@@ -72,11 +78,32 @@ class OtpService
                     'attempts' => $newAttempts,
                     'blocked_until' => now()->addHours(12),
                 ]);
-                throw new OtpTooManyAttemptsException("تعداد دفعات مجاز به پایان رسید. به مدت 12 ساعت بلاک شدید.");
-            }
-            $otp->increment('attempts');
-            throw new OtpNotFoundException("کد وارد شده صحیح نیست.");
+                throw new OtpTooManyAttemptsException();
+                $otp->increment('attempts');
+            throw new OtpNotFoundException();
         }
+            }
         return $otp;
+
+        }
+
+    public function verifyAndLogin(string $phone,string $code): string{
+        $otp=$this->verify($phone,$code);
+        $payload = $otp->payload ?? [];
+        $user = DB::transaction(function () use ($otp, $payload) {
+            $user = User::firstOrCreate(
+                ['phone' => $otp->phone],
+                [
+                    'name' => $payload['name'] ?? 'کاربر',
+                ]
+            );
+            $otp->delete();
+            return $user;
+        });
+        return auth()->login($user);
+
     }
 }
+    {
+
+         }
