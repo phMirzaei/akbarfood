@@ -12,6 +12,6 @@ class OtpTooManyAttemptsException extends Exception
     {
         return response()->json([
             "message" => "تعداد دفعات مجاز به پایان رسید. به مدت 12 ساعت بلاک شدید."
-        ]);
+        ],429);
     }
 }

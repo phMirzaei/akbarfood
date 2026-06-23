@@ -11,6 +11,6 @@ class OtpExpiredException extends Exception
     {
         return response()->json([
             'message' => "کد تایید منقضی شده است. لطفاً کد جدید درخواست دهید."
-        ]);
+        ],410);
     }
 }

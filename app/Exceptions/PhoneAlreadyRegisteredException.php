@@ -12,6 +12,6 @@ class PhoneAlreadyRegisteredException extends Exception
     {
         return response()->json([
             'message'=>"این شماره قبلا ثبت شده است."
-        ]);
+        ],409);
     }
 }

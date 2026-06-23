@@ -8,12 +8,10 @@ use App\Exceptions\OtpNotFoundException;
 use App\Exceptions\OtpTooManyAttemptsException;
 use App\Exceptions\OtpTooManyRequestException;
 use App\Exceptions\PhoneAlreadyRegisteredException;
-use App\Exceptions\UserAlreadyExistsException;
 use App\Models\Otp;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 
 class OtpService
@@ -79,16 +77,18 @@ class OtpService
                     'blocked_until' => now()->addHours(12),
                 ]);
                 throw new OtpTooManyAttemptsException();
-                $otp->increment('attempts');
-            throw new OtpNotFoundException();
-        }
             }
+            $otp->increment('attempts');
+            throw new OtpNotFoundException();
+
+        }
         return $otp;
 
-        }
+    }
 
-    public function verifyAndLogin(string $phone,string $code): string{
-        $otp=$this->verify($phone,$code);
+    public function verifyAndRegister(string $phone, string $code): string
+    {
+        $otp = $this->verify($phone, $code);
         $payload = $otp->payload ?? [];
         $user = DB::transaction(function () use ($otp, $payload) {
             $user = User::firstOrCreate(
@@ -104,6 +104,3 @@ class OtpService
 
     }
 }
-    {
-
-         }
