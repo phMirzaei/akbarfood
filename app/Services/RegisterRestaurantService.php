@@ -12,11 +12,10 @@ class RegisterRestaurantService
     public function execute(RegisterRestaurantDto $dto, int $ownerId)
     {
         DB::transaction(function () use ($dto, $ownerId) {
-            $path = $dto->permit_scan->store('permits', 'public');
-            DB::afterRollBack(fn()=>Storage::disk('public')->delete($path));
+            DB::afterRollBack(fn()=>Storage::disk('public')->delete($dto->permit_scan));
             $restaurant = Restaurant::create([
                 'name' => $dto->name,
-                'permit_scan' => $path,
+                'permit_scan' => $dto->permit_scan,
                 'landline_number' => $dto->landline_number,
                 'city' => $dto->city,
                 'street' => $dto->street,
