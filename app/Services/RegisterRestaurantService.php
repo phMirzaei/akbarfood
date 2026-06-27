@@ -2,24 +2,24 @@
 
 namespace App\Services;
 
+use App\DTOs\RegisterRestaurantDto;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class RegisterRestaurantService
 {
-    public function execute(array $data, int $ownerId)
+    public function execute(RegisterRestaurantDto $dto, int $ownerId)
     {
-        DB::transaction(function () use ($data, $ownerId) {
-            $path = $data['permit_scan']->store('permits', 'public');
-            DB::afterRollBack(fn()=>Storage::disk('public')->delete($path));
+        DB::transaction(function () use ($dto, $ownerId) {
+            DB::afterRollBack(fn()=>Storage::disk('public')->delete($dto->permit_scan));
             $restaurant = Restaurant::create([
-                'name' => $data['name'],
-                'permit_scan' => $path,
-                'landline_number' => $data['landline_number'],
-                'city' => $data['city'],
-                'street' => $data['street'],
-                'alley' => $data['alley'],
+                'name' => $dto->name,
+                'permit_scan' => $dto->permit_scan,
+                'landline_number' => $dto->landline_number,
+                'city' => $dto->city,
+                'street' => $dto->street,
+                'alley' => $dto->alley,
                 'status' => 'pending',
             ]);
             $restaurant->users()->attach($ownerId, [

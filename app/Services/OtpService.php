@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\SendOtpDto;
 use App\Exceptions\OtpBlockedException;
 use App\Exceptions\OtpExpiredException;
 use App\Exceptions\OtpNotFoundException;
@@ -22,8 +23,10 @@ class OtpService
     {
     }
 
-    public function send(string $phone, array $payload = []): void
+    public function send(SendOtpDto $dto): void
     {
+        $phone = $dto->phone;
+        $payload=$dto->payload;
         if (User::where('phone', $phone)->exists()) {
             throw new PhoneAlreadyRegisteredException();
         }
