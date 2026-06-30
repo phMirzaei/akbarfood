@@ -7,7 +7,7 @@ class SendOtpDto
     public function __construct(
 
         public readonly string $phone,
-        public readonly array  $payload = [],
+        public readonly SendPayloadDto $payload,
     )
     {
     }

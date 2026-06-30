@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\DTOs\SendOtpDto;
+use App\DTOs\SendPayloadDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SendOtpRequest;
 use App\Http\Requests\VerifyOtpRequest;
@@ -15,9 +16,9 @@ class AuthController extends Controller
     {
         $dto = new SendOtpDto(
             phone: $request->validated('phone'),
-            payload: [
-                'name' => $request->validated('name'),
-            ]
+            payload: new SendPayloadDto(
+                name: $request->validated('name'),
+            )
         );
 
         $otpService->send($dto);
