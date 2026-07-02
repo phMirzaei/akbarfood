@@ -22,7 +22,7 @@ class RegisterRestaurantService
                 'alley' => $registerRestaurant->alley,
                 'status' => 'pending',
             ]);
-            $restaurant->users()->sync($ownerId, [
+            $restaurant->users()->attach($ownerId, [
                 'role' => 'owner'
             ]);
         });

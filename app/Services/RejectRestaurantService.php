@@ -24,8 +24,7 @@ class RejectRestaurantService
             $owner = $restaurant->owner()->first();
             $restaurant->delete();
             DB::afterCommit(function () use ($owner) {
-                $this->notificationService->send('درخواست ثبت رستوران شما رد شد.', $owner->phone);
-
+                $this->notificationService->send($owner->phone, 'درخواست ثبت رستوران شما رد شد.');
             });
         });
     }

@@ -21,8 +21,7 @@ class ApproveRestaurantService
         $restaurant->update(
             ['status' => 'approved']
         );
-        $owner=$restaurant->owner()->first();
-        $this->notificationService->send("درخواست ثبت رستوران شما تایید شد.",$owner->phone);
-
+        $owner = $restaurant->owner()->first();
+        $this->notificationService->send($owner->phone, "درخواست ثبت رستوران شما تایید شد.");
     }
 }

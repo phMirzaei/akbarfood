@@ -10,10 +10,10 @@ use Illuminate\Http\Request;
 
 class OperatorController extends Controller
 {
-    public function promoteOperator(Request $request, promoteToOperatorService $promoteToOperatorService, $userId): JsonResponse
+    public function promoteOperator(Request $request,PromoteToOperatorService $promoteToOperatorService, $userId): JsonResponse
     {
         $promoteToOperatorService->execute(
-            new PromoteToOperator(auth()->id(), $userId)
+            new PromoteToOperator($userId)
         );
 
         return response()->json([
