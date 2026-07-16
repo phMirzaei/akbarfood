@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('code');
             $table->string('phone',11)->unique();
             $table->string('name');
+            $table->dateTime('next_allowed_request_otp');
             $table->timestamps();
         });
     }
