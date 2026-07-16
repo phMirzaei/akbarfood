@@ -20,6 +20,7 @@ class RegisterRestaurantService
                 'city' => $registerRestaurant->city,
                 'street' => $registerRestaurant->street,
                 'alley' => $registerRestaurant->alley,
+                'vendor_type' => $registerRestaurant->vendor_type,
                 'status' => 'pending',
             ]);
             $restaurant->users()->attach($ownerId, [

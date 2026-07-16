@@ -20,7 +20,7 @@ class RestaurantController extends Controller
             city: $request->validated('city'),
             street: $request->validated('street'),
             alley: $request->validated('alley'),
-
+            vendor_type: $request->validated('vendor_type'),
         );
         $service->execute(
             $dto,
