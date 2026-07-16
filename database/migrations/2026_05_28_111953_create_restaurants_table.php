@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('alley');
             $table->string('management_full_name');
             $table->string('phone')->unique();
+            $table->enum('vendor_type',['کافه','رستوران','نانوایی','آبمیوه && بستنی'])->default('رستوران');
             $table->timestamps();
         });
     }

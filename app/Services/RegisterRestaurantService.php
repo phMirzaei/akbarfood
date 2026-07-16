@@ -20,6 +20,7 @@ class RegisterRestaurantService
                 'city' => $dto->city,
                 'street' => $dto->street,
                 'alley' => $dto->alley,
+                'vendor_type' => $dto->vendor_type,
                 'status' => 'pending',
             ]);
             $restaurant->users()->attach($ownerId, [

@@ -10,7 +10,7 @@ use App\Models\User;
 class Restaurant extends Model{
     use HasFactory;
 
-    protected $fillable = ['name', 'permit_scan', 'landline_number', 'city', 'street', 'alley', 'status'];
+    protected $fillable = ['name', 'permit_scan', 'landline_number', 'city', 'street', 'alley', 'status','vendor_type'];
 
     public function users(): BelongsToMany
     {
