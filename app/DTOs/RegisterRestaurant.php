@@ -11,6 +11,7 @@ class RegisterRestaurant
         public readonly string $city,
         public readonly string $street,
         public readonly string $alley,
+        public readonly string $vendor_type
     )
     {
 
