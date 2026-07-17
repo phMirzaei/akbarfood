@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('alley');
             $table->string('management_full_name');
             $table->string('phone')->unique();
-            $table->enum('vendor_type', ['cafe', 'restaurant','juice && ice cream'])->default('restaurant');
+            $table->enum('vendor_type', ['cafe', 'restaurant','juice_and_ice_cream'])->default('restaurant');
             $table->timestamps();
         });
     }

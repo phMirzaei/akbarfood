@@ -22,7 +22,7 @@ class RegisterRequest extends FormRequest
             'city' => 'required|string|min:2|max:19|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'street' => 'required|string|min:2|max:30|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'alley' => 'required|string|min:2|max:30|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
-            'vendor_type' => 'required|in:cafe,restaurant,juice && ice cream',
+            'vendor_type' => 'required|in:cafe,restaurant,juice_and_ice_cream',
         ];
     }
 
