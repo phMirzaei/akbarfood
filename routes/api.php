@@ -5,6 +5,7 @@ use App\Http\Controllers\Operator\OperatorController;
 use App\Http\Controllers\Operator\RestaurantApprovalController;
 use App\Http\Controllers\Restaurants\RestaurantController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Menu\MenuController;
 
 Route::prefix('auth')->group(function () {
     Route::post('request-otp', [AuthController::class, 'requestOtp']);
@@ -23,6 +24,9 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('{restaurant}/approve', [RestaurantApprovalController::class, 'approveRestaurant']);
         Route::patch('{restaurant}/reject', [RestaurantApprovalController::class, 'rejectRestaurant']);
 
+    });
+    Route::middleware('restaurantOwner')->prefix('restaurants')->group(function () {
+        Route::post('{restaurant}/add_menu_item', [MenuController::class, 'addMenuItems']);
     });
 
 });
