@@ -22,7 +22,7 @@ class MenuItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:50|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
+            'name' => 'required|string|min:3|max:30|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'description' => 'required|string|min:8|max:100|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'category' => 'required|in:Drink,Iranian_food,Fast_food,Desert',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
