@@ -44,7 +44,8 @@ jobs:
             - One emoji per comment header for scannability. Examples: 🐛 (typo), 💥 (crash),
               🚨 (security), 🔒 (atomicity), 🌐 (i18n), 🐧 (platform-specific), 🧹 (dead code),
               🧟 (unused/orphaned), 🗑️ (shouldn't be committed), 🔁 (regression), ⏰ (time/expiry),
-              🗄️ (database), 📡 (protocol/HTTP), 🤐 (silent failure), ℹ️ (FYI/no-action).
+              🗄️ (database), 📡 (protocol/HTTP), 🤐 (silent failure), ℹ️ (FYI/no-action),
+              🏗️ (business rule in the wrong layer).
 
             # What to post
 
@@ -153,17 +154,56 @@ jobs:
 
             Flag it when new code breaks this shape:
 
-            - Business logic in the controller — conditionals, calculations, multi-step workflows.
-            - A controller touching a Model or `DB::` directly instead of going through a Service.
-            - A Service that takes a loose array or a raw `Request` instead of a DTO.
             - A new endpoint with no DTO + Service pair behind it.
-            - Validation rules written inline in the controller instead of a FormRequest.
             - A DTO/Service name that breaks the pairing above (wrong suffix, mismatched names,
               an entry point not called `execute()`).
 
-            When you flag one of these, show the fix as a diff that moves the code to the right
-            layer — don't just say "this belongs in a service". The author is learning the
-            pattern, so name which layer the code belongs in and why that layer owns it.
+            # Business rules — only a Service may hold one
+
+            A **business rule** is any decision the business could change without the software
+            changing shape: who may do what, when something counts as valid, what a value should
+            be, what happens next. If a product owner could ask to change it, it is a business
+            rule, and it belongs in a Service — never in a controller, a FormRequest, or the
+            database.
+
+            **The test for any rule you find:** *would this still have to be true if the same
+            action arrived from a console command, a queued job, or a test?* If yes, but the rule
+            is only enforced somewhere HTTP-specific or DB-specific, that is the bug — every
+            other caller skips it.
+
+            `ApproveRestaurantService::execute` is the model to point to: it checks
+            `status !== 'pending'` and throws a `DomainException`. The rule sits in the Service,
+            so every caller gets it.
+
+            **Controller — no rules at all.** Build the DTO, call `$service->execute($dto)`,
+            return the response. Nothing else. Flag any `if` about domain state, any calculation,
+            any multi-step workflow; a controller touching a Model or `DB::` directly; validation
+            rules written inline instead of in a FormRequest.
+
+            **FormRequest — shape only, never domain.** This is the subtle one. A FormRequest
+            checks the *shape* of input: present, string, `digits:4`, `max:100`, phone regex, ID
+            exists. That is correct and stays — `SendOtpRequest` and `VerifyOtpRequest` are the
+            model. It must not answer *domain* questions ("may this user approve this
+            restaurant", "is this OTP still valid", "has this phone been blocked"). Such checks
+            in `rules()`, `authorize()`, `withValidator()`, or a custom Rule object are business
+            rules hiding in the delivery layer — move them into the Service and throw a domain
+            exception (`app/Exceptions/`). A Service that takes a loose array or a raw `Request`
+            instead of a DTO is the same leak from the other side.
+
+            **Database — may enforce a rule, must not define it.** Structural integrity is the
+            DB's job and is *not* a business rule: foreign keys, `unique`, `NOT NULL`, and
+            `->default(...)` all stay — do not flag them. The bug is when the DB is the *only*
+            place a decision exists. Flag: a Service leaning on a column default instead of
+            stating the decision (`RegisterRestaurantService` gets this right — it sets
+            `'status' => 'pending'` explicitly even though the migration also defaults it; the
+            default is a safety net, the Service is where the rule is written); a global scope
+            silently defining what "active" means; logic in a model accessor, mutator, or
+            `booted()` hook; a workflow whose only definition is an `enum` column's value list.
+            A reader should never have to open a migration to learn how the business works.
+
+            When you flag any of this, show the fix as a diff that *moves the code to the right
+            layer* — never just "this belongs in a service". Name the layer and say why that
+            layer owns it. The author is learning the pattern, not being audited against it.
 
             # PSR
 
