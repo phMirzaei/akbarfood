@@ -124,6 +124,63 @@ jobs:
             - [Doc link 2](https://...) — one-line description.
             ```
 
+            # Architecture — every interaction with the system follows this shape
+
+            Every action the system can perform is one **DTO** (the command — what was asked for)
+            paired with one **Service** (the handler — the code that carries it out). The flow is
+            always:
+
+            **FormRequest → Controller → DTO → Service.**
+
+            1. **Validation lives in a FormRequest** (`app/Http/Requests/`), never in the
+               controller.
+            2. **The controller stays thin.** It builds a DTO (`app/DTOs/`) from the validated
+               input, calls `$service->execute($dto)`, and returns the response. Nothing else.
+            3. **The Service owns the business logic** and all database work. Collaborators
+               (e.g. `NotificationService`) come in through the constructor.
+
+            The canonical example is `RestaurantController::register` → `RegisterRestaurant` →
+            `RegisterRestaurantService::execute`. New code should look exactly like that.
+
+            **Naming is a 1:1 pairing** and must stay consistent:
+
+            - A DTO is named for the action as verb-then-noun: `RegisterRestaurant`,
+              `ApproveRestaurant`, `RejectRestaurant`, `PromoteToOperator`, `VerifyPhoneNumber`.
+              **No `Dto` suffix** — that suffix was deliberately removed; do not reintroduce it.
+            - Its Service is that same name plus `Service`: `RegisterRestaurant` →
+              `RegisterRestaurantService`.
+            - The Service's entry point is always `execute()`.
+
+            Flag it when new code breaks this shape:
+
+            - Business logic in the controller — conditionals, calculations, multi-step workflows.
+            - A controller touching a Model or `DB::` directly instead of going through a Service.
+            - A Service that takes a loose array or a raw `Request` instead of a DTO.
+            - A new endpoint with no DTO + Service pair behind it.
+            - Validation rules written inline in the controller instead of a FormRequest.
+            - A DTO/Service name that breaks the pairing above (wrong suffix, mismatched names,
+              an entry point not called `execute()`).
+
+            When you flag one of these, show the fix as a diff that moves the code to the right
+            layer — don't just say "this belongs in a service". The author is learning the
+            pattern, so name which layer the code belongs in and why that layer owns it.
+
+            # PSR
+
+            **Formatting is not your job.** Laravel Pint enforces PSR-12 mechanically in CI on
+            every changed file, and it auto-fixes. Never post a comment about spacing, braces,
+            import order, blank lines, quote style, or trailing commas — the author fixes those
+            by running `vendor/bin/pint`. A comment about them is pure noise.
+
+            Do flag PSR-4 structural problems, which Pint cannot fix:
+
+            - Namespace doesn't match the directory (`App\Services\` must live in `app/Services/`).
+            - Class name doesn't match the filename.
+            - Class not in StudlyCaps, or method not in camelCase.
+
+            These matter because they break autoloading — and case mismatches break it only on
+            Linux, so they pass locally on macOS and fail in production.
+
             # Project decisions — DO NOT FLAG these
 
             1. **OTPs are sent to a hardcoded Telegram group chat** (`chat_id: '-1003740180374'`)
