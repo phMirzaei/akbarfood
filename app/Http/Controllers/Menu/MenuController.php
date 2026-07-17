@@ -24,6 +24,6 @@ class MenuController extends Controller
         $menuService->execute($menuItem,$restaurant);
         return response()->json([
             'message'=>'آیتم با موفقیت اضافه شد .'
-        ],200);
+        ],201);
     }
 }
