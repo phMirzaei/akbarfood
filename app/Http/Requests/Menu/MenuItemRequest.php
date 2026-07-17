@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Menu;
 
+use App\Models\Menu\Menu;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class MenuItemRequest extends FormRequest
 {
@@ -22,7 +24,15 @@ class MenuItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:30|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
+            'name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:30',
+                'regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
+                Rule::unique(Menu::class, 'name')
+                    ->where('restaurant_id', $this->route('restaurant')->id),
+            ],
             'description' => 'required|string|min:8|max:100|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'category' => 'required|in:Drink,Iranian_food,Fast_food,Desert',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
