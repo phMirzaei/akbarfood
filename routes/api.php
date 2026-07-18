@@ -27,8 +27,12 @@ Route::middleware('auth:api')->group(function () {
     });
     Route::middleware('restaurantOwner')->prefix('restaurants')->group(function () {
         Route::post('{restaurant}/add_menu_item', [MenuController::class, 'addMenuItems']);
+        Route::put('{restaurant}/update_menu_item/{menuItem}', [MenuController::class, 'updateMenuItems']);
+        Route::delete('{restaurant}/remove_menu_item/{menuItem}', [MenuController::class, 'removeMenuItems']);
     });
 
 });
+Route::get('restaurants/{restaurant}/menu', [MenuController::class, 'listMenuItems']);
+
 
 

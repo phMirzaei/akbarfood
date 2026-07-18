@@ -2,10 +2,12 @@
 
 namespace App\Models\Restaurant;
 
+use App\Models\Menu\Menu;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Restaurant extends Model{
     use HasFactory;
@@ -16,6 +18,11 @@ class Restaurant extends Model{
     {
         return $this->belongsToMany(User::class, 'restaurant_users')
             ->withPivot('role');
+    }
+
+    public function menuItems(): hasMany
+    {
+        return $this->hasMany(Menu::class,'restaurant_id');
     }
 
     public function owner(): BelongsToMany
