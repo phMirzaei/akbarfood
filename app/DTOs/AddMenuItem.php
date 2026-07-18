@@ -4,7 +4,7 @@ namespace App\DTOs;
 
 use Illuminate\Http\UploadedFile;
 
-readonly final class AddMenuItem
+final readonly class AddMenuItem
 {
     public function __construct(
         public string $name,
@@ -13,5 +13,5 @@ readonly final class AddMenuItem
         public UploadedFile $image,
         public bool $is_available,
         public int $price,
-    ){}
-        }
+    ) {}
+}

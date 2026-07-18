@@ -10,17 +10,15 @@ use Illuminate\Http\Request;
 
 class OperatorController extends Controller
 {
-    public function promoteOperator(Request $request,PromoteToOperatorService $promoteToOperatorService, $userId): JsonResponse
+    public function promoteOperator(Request $request, PromoteToOperatorService $promoteToOperatorService, $userId): JsonResponse
     {
         $promoteToOperatorService->execute(
             new PromoteToOperator($userId)
         );
 
         return response()->json([
-            'message' => 'اوبراتور با موفقیت اضافه شد.'
+            'message' => 'اوبراتور با موفقیت اضافه شد.',
         ]);
 
-
     }
-
 }

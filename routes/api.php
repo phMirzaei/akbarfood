@@ -1,15 +1,15 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Operator\OperatorController;
 use App\Http\Controllers\Operator\RestaurantApprovalController;
 use App\Http\Controllers\Restaurants\RestaurantController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Menu\MenuController;
 
 Route::prefix('auth')->group(function () {
     Route::post('request-otp', [AuthController::class, 'requestOtp']);
-    Route::post('verify-otp',  [AuthController::class, 'verifyOtp']);
+    Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
 });
 
 Route::middleware('auth:api')->group(function () {
@@ -33,6 +33,3 @@ Route::middleware('auth:api')->group(function () {
 
 });
 Route::get('restaurants/{restaurant}/menu', [MenuController::class, 'listMenuItems']);
-
-
-

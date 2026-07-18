@@ -3,16 +3,17 @@
 namespace App\Models\Restaurant;
 
 use App\Models\Menu\Menu;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Restaurant extends Model{
+class Restaurant extends Model
+{
     use HasFactory;
 
-    protected $fillable = ['name', 'permit_scan', 'landline_number', 'city', 'street', 'alley', 'status','created_at','updated_at','vendor_type'];
+    protected $fillable = ['name', 'permit_scan', 'landline_number', 'city', 'street', 'alley', 'status', 'created_at', 'updated_at', 'vendor_type'];
 
     public function users(): BelongsToMany
     {
@@ -20,9 +21,9 @@ class Restaurant extends Model{
             ->withPivot('role');
     }
 
-    public function menuItems(): hasMany
+    public function menuItems(): HasMany
     {
-        return $this->hasMany(Menu::class,'restaurant_id');
+        return $this->hasMany(Menu::class, 'restaurant_id');
     }
 
     public function owner(): BelongsToMany

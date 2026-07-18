@@ -10,7 +10,7 @@ class OtpExpiredException extends Exception
     public function render(): JsonResponse
     {
         return response()->json([
-            'message' => "کد تایید منقضی شده است. لطفاً کد جدید درخواست دهید."
-        ],410);
+            'message' => 'کد تایید منقضی شده است. لطفاً کد جدید درخواست دهید.',
+        ], 410);
     }
 }

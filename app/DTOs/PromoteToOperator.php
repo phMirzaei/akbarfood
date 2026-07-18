@@ -2,12 +2,10 @@
 
 namespace App\DTOs;
 
-readonly final class PromoteToOperator
+final readonly class PromoteToOperator
 {
     public function __construct(
         public int $userId
-    )
-    {
-    }
+    ) {}
 
 }

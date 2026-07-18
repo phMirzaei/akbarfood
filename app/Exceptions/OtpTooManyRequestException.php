@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
+
 class OtpTooManyRequestException extends Exception
 {
     public function render(): JsonResponse

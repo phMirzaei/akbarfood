@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTOs\PromoteToOperator;
 use App\Models\User;
+
 class PromoteToOperatorService
 {
     public function execute(PromoteToOperator $promoteToOperator)

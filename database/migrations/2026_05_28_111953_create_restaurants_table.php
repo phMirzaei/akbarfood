@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     public function up(): void
     {
         Schema::create('restaurants', function (Blueprint $table) {
@@ -19,11 +18,10 @@ return new class extends Migration
             $table->string('alley');
             $table->string('management_full_name');
             $table->string('phone')->unique();
-            $table->enum('vendor_type', ['cafe', 'restaurant','juice_and_ice_cream'])->default('restaurant');
+            $table->enum('vendor_type', ['cafe', 'restaurant', 'juice_and_ice_cream'])->default('restaurant');
             $table->timestamps();
         });
     }
-
 
     public function down(): void
     {

@@ -26,10 +26,9 @@ class RestaurantController extends Controller
             $dto,
             auth()->id()
         );
+
         return response()->json([
             'message' => 'درخواست شما برای ثبت رستوران در حال بررسی است.',
         ], 201);
     }
-
-
 }

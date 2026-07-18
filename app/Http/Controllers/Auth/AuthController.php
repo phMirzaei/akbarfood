@@ -35,10 +35,10 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'ثبت نام شما با موفقیت انجام شد.',
-            'name'=>$user->name,
-            'phone'=>$phone,
-             'token'=>$token
-         ]);
+            'name' => $user->name,
+            'phone' => $phone,
+            'token' => $token,
+        ]);
 
     }
 }

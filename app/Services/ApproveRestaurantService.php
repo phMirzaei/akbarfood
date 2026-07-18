@@ -8,9 +8,7 @@ use App\Models\Restaurant\Restaurant;
 class ApproveRestaurantService
 {
     public function __construct(
-        private NotificationService $notificationService)
-    {
-    }
+        private NotificationService $notificationService) {}
 
     public function execute(ApproveRestaurant $approveRestaurant)
     {
@@ -22,6 +20,6 @@ class ApproveRestaurantService
             ['status' => 'approved']
         );
         $owner = $restaurant->owner()->first();
-        $this->notificationService->send($owner->phone, "درخواست ثبت رستوران شما تایید شد.");
+        $this->notificationService->send($owner->phone, 'درخواست ثبت رستوران شما تایید شد.');
     }
 }

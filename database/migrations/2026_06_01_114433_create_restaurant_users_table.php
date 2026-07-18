@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     public function up(): void
     {
         Schema::create('restaurant_users', function (Blueprint $table) {
@@ -14,7 +13,7 @@ return new class extends Migration
             $table->foreignId('restaurant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->unique(['restaurant_id', 'user_id']);
-            $table->enum('role',['manager','owner'])->default('owner');
+            $table->enum('role', ['manager', 'owner'])->default('owner');
         });
     }
 

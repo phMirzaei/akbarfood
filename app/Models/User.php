@@ -4,10 +4,10 @@ namespace App\Models;
 
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -16,7 +16,7 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'phone',
         'name',
-        'role'
+        'role',
     ];
 
     public $timestamps = false;

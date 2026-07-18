@@ -2,12 +2,9 @@
 
 namespace App\DTOs;
 
-readonly final class RejectRestaurant
+final readonly class RejectRestaurant
 {
     public function __construct(
         public int $restaurantId,
-    )
-    {
-
-}
+    ) {}
 }

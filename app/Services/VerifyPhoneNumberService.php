@@ -16,7 +16,7 @@ class VerifyPhoneNumberService
 {
     private function isVerificationCodeWrong(VerifyPhoneNumber $verifyPhoneNumber, Otp $otp): bool
     {
-        return !Hash::check($verifyPhoneNumber->code, $otp->code);
+        return ! Hash::check($verifyPhoneNumber->code, $otp->code);
     }
 
     private function shouldLimitAttempts(Otp $otp): bool
@@ -35,6 +35,7 @@ class VerifyPhoneNumberService
     private function createUser(Otp $otp): User
     {
         $payload = $otp->payload ?? [];
+
         return User::create(
             [
                 'phone' => $otp->phone,
@@ -46,23 +47,23 @@ class VerifyPhoneNumberService
     public function execute(VerifyPhoneNumber $verifyPhoneNumber): User
     {
         $otp = Otp::where('phone', $verifyPhoneNumber->phone)->first();
-        if (!$otp) {
-            throw new OtpNotFoundException();
+        if (! $otp) {
+            throw new OtpNotFoundException;
         }
         if ($otp->expired_at->isPast()) {
             $otp->delete();
-            throw new OtpExpiredException();
+            throw new OtpExpiredException;
         }
         if ($otp?->blocked_until?->isFuture()) {
-            throw new OtpBlockedException();
+            throw new OtpBlockedException;
         }
         if ($this->isVerificationCodeWrong($verifyPhoneNumber, $otp)) {
             if ($this->shouldLimitAttempts($otp)) {
                 $this->limitPhoneNumber($otp);
-                throw new OtpTooManyAttemptsException();
+                throw new OtpTooManyAttemptsException;
             }
             $otp->increment('attempts');
-            throw new \DomainException("کد وارد شده اشتباه است.");
+            throw new \DomainException('کد وارد شده اشتباه است.');
         }
         $user = DB::transaction(function () use ($otp) {
 
@@ -72,6 +73,7 @@ class VerifyPhoneNumberService
 
             return $user;
         });
+
         return $user;
     }
 }

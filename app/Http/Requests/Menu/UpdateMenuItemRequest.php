@@ -6,11 +6,8 @@ use App\Models\Menu\Menu;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class MenuItemRequest extends FormRequest
+class UpdateMenuItemRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
@@ -26,13 +23,15 @@ class MenuItemRequest extends FormRequest
                 'max:30',
                 'regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
                 Rule::unique(Menu::class, 'name')
-                    ->where('restaurant_id', $this->route('restaurant')->id),
+                    ->where('restaurant_id', $this->route('restaurant')->id)
+                    ->ignore($this->route('menuItem')->id),
             ],
             'description' => 'required|string|min:8|max:100|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
             'category' => 'required|in:Drink,Iranian_food,Fast_food,Desert',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'is_available' => 'required|boolean',
             'price' => 'required|integer|min:10000|max:5000000',
+
         ];
     }
 }
