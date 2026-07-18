@@ -14,23 +14,21 @@ class RequestPhoneNumberVerificationService
 {
     public function __construct(
         private NotificationService $notificationService,
-    )
-    {
-    }
+    ) {}
 
     public function execute(RequestPhoneNumberVerification $requestPhoneNumberVerification): void
     {
         if (User::where('phone', $requestPhoneNumberVerification->phone)->exists()) {
-            throw new PhoneAlreadyRegisteredException();
+            throw new PhoneAlreadyRegisteredException;
         }
 
         $otp = Otp::where('phone', $requestPhoneNumberVerification->phone)->first();
         if ($otp instanceof Otp) {
             if ($otp->next_allowed_request_otp->isFuture()) {
-                throw new OtpTooManyRequestException();
+                throw new OtpTooManyRequestException;
             }
             if ($otp->blocked_until && $otp->blocked_until->isFuture()) {
-                throw new OtpBlockedException();
+                throw new OtpBlockedException;
             }
         }
         $code = random_int(1000, 9999);
@@ -42,8 +40,8 @@ class RequestPhoneNumberVerificationService
                 'attempts' => 0,
                 'expired_at' => now()->addMinutes(10),
                 'payload' => [
-                    'name' => $requestPhoneNumberVerification->name
-                ]
+                    'name' => $requestPhoneNumberVerification->name,
+                ],
             ]
         );
         $this->notificationService->send($requestPhoneNumberVerification->phone, "کد تایید {$code}میباشد.");

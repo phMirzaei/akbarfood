@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\OperatorMiddleware;
+use App\Http\Middleware\RestaurantOwnerMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,9 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'operator'=>\App\Http\Middleware\OperatorMiddleware::class,
-            'admin'=>\App\Http\Middleware\AdminMiddleware::class,
-            'restaurantOwner'=>\App\Http\Middleware\RestaurantOwnerMiddleware::class,
+            'operator' => OperatorMiddleware::class,
+            'admin' => AdminMiddleware::class,
+            'restaurantOwner' => RestaurantOwnerMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

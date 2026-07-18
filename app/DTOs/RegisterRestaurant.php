@@ -12,8 +12,5 @@ class RegisterRestaurant
         public readonly string $street,
         public readonly string $alley,
         public readonly string $vendor_type
-    )
-    {
-
-}
+    ) {}
 }

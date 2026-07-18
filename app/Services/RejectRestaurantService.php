@@ -10,9 +10,7 @@ class RejectRestaurantService
 {
     public function __construct(
         private NotificationService $notificationService,
-    )
-    {
-    }
+    ) {}
 
     public function execute(RejectRestaurant $rejectRestaurant)
     {

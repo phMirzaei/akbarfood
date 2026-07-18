@@ -3,9 +3,6 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-
 
 class OperatorMiddleware
 {
@@ -23,7 +20,7 @@ class OperatorMiddleware
         }
 
         return response()->json([
-            'message' => 'دسترسی غیرمجاز.'
+            'message' => 'دسترسی غیرمجاز.',
         ], 403);
     }
 }

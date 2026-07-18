@@ -2,12 +2,10 @@
 
 namespace App\DTOs;
 
-readonly final class VerifyPhoneNumber
+final readonly class VerifyPhoneNumber
 {
     public function __construct(
         public string $phone,
         public string $code,
-    )
-    {
-}
+    ) {}
 }

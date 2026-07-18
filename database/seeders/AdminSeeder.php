@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class AdminSeeder extends Seeder
@@ -11,10 +10,10 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         User::UpdateOrCreate(
-            ['phone'=>'09002827287'],
+            ['phone' => '09002827287'],
             [
-                'name'=>'ممد',
-                'role'=>'admin',
+                'name' => 'ممد',
+                'role' => 'admin',
             ]
         );
     }

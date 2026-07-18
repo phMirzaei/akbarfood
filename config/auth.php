@@ -1,12 +1,14 @@
 <?php
 
+use App\Models\Restaurant;
+use App\Models\User;
+
 return [
 
     'defaults' => [
         'guard' => 'api',
         'passwords' => 'users',
     ],
-
 
     'guards' => [
         'web' => [
@@ -23,12 +25,12 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => User::class,
         ],
 
         'restaurants' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Restaurant::class,
+            'model' => Restaurant::class,
         ],
 
         // اگر خواستی provider دیتابیسی داشته باشی:
