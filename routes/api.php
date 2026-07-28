@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Cart\CartController;
+use App\Http\Controllers\Cart\CartItemController;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Operator\OperatorController;
 use App\Http\Controllers\Operator\RestaurantApprovalController;
@@ -30,6 +32,8 @@ Route::middleware('auth:api')->group(function () {
         Route::put('{restaurant}/update_menu_item/{menuItem}', [MenuController::class, 'updateMenuItems']);
         Route::delete('{restaurant}/remove_menu_item/{menuItem}', [MenuController::class, 'removeMenuItems']);
     });
+    Route::post('restaurants/{restaurant}/add_item_to_cart', [CartItemController::class, 'addItemToCart']);
+    Route::get('cart', [CartController::class, 'listCartItems']);
 
 });
 Route::get('restaurants/{restaurant}/menu', [MenuController::class, 'listMenuItems']);
