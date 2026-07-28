@@ -15,12 +15,12 @@ class AddItemToCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'menu_id' =>[
+            'menu_id' => [
                 'required',
                 'integer',
                 Rule::exists('menus', 'id')->
-                    where('restaurant_id',$this->route('restaurant')->id),
-            ]
+                    where('restaurant_id', $this->route('restaurant')->id),
+            ],
             'quantity' => 'required|integer|min:1',
         ];
     }
