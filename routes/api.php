@@ -32,7 +32,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('{restaurant}/update_menu_item/{menuItem}', [MenuController::class, 'updateMenuItems']);
         Route::delete('{restaurant}/remove_menu_item/{menuItem}', [MenuController::class, 'removeMenuItems']);
     });
-    Route::post('restaurants/{restaurant}/add_item_to_cart', [CartItemController::class, 'addItemToCart']);
+    Route::post('restaurants/add_item_to_cart', [CartItemController::class, 'addItemToCart']);
     Route::get('cart', [CartController::class, 'listCartItems']);
 
 });
