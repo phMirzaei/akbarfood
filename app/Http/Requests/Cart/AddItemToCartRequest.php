@@ -15,7 +15,7 @@ class AddItemToCartRequest extends FormRequest
     {
         return [
             'menu_id' => 'required|exists:menus,id',
-            'quantity' => 'required|integer',
+            'quantity' => 'required|integer|min:1',
         ];
     }
 }

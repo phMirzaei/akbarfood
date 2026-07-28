@@ -33,7 +33,7 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('{restaurant}/remove_menu_item/{menuItem}', [MenuController::class, 'removeMenuItems']);
     });
     Route::post('restaurants/{restaurant}/add_item_to_cart', [CartItemController::class, 'addItemToCart']);
-    Route::get('{user}/cart_item', [CartController::class, 'listCartItems']);
+    Route::get('cart', [CartController::class, 'listCartItems']);
 
 });
 Route::get('restaurants/{restaurant}/menu', [MenuController::class, 'listMenuItems']);

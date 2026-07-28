@@ -8,9 +8,14 @@ class ListCartItemService
 {
     public function execute(int $userId)
     {
-        $cart = Cart::firstOrCreate([
-            'user_id' => $userId,
-        ]);
+        $cart = Cart::where('user_id', $userId)->first();
+        if (! $cart) {
+            return [
+                'items' => [],
+                'total' => 0,
+            ];
+        }
+
         $items = $cart->items->map(function ($item) {
             return [
                 'name' => $item->menu->name,
