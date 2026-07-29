@@ -34,6 +34,8 @@ Route::middleware('auth:api')->group(function () {
     });
     Route::post('restaurants/{restaurant}/add_item_to_cart', [CartItemController::class, 'addItemToCart']);
     Route::get('cart', [CartController::class, 'listCartItems']);
+    Route::put('cart/items/{cartItem}', [CartItemController::class, 'updateCartItem']);
+    Route::delete('cart/items/{cartItem}', [CartItemController::class, 'removeItemFromCart']);
 
 });
 Route::get('restaurants/{restaurant}/menu', [MenuController::class, 'listMenuItems']);
