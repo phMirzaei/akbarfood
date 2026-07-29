@@ -12,8 +12,8 @@ class RemoveCartItemService
     {
         $cart = Auth::user()->cart;
 
-        if (!$cart || $cartItem->cart_id !== $cart->id) {
-            throw new CartItemNotFoundException();
+        if (! $cart || $cartItem->cart_id !== $cart->id) {
+            throw new CartItemNotFoundException;
         }
 
         $cartItem->delete();

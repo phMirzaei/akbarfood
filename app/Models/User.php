@@ -39,6 +39,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Restaurant::class, 'restaurant_users')
             ->withPivot('role');
     }
+
     public function cart()
     {
         return $this->hasOne(Cart::class, 'user_id');

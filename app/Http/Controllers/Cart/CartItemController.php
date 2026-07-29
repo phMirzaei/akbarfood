@@ -29,22 +29,24 @@ class CartItemController extends Controller
         ]);
     }
 
-    public function updateCartItem(UpdateCartItemRequest $request,UpdateCartItemService $updateCartItemService,CartItem $cartItem): JsonResponse
+    public function updateCartItem(UpdateCartItemRequest $request, UpdateCartItemService $updateCartItemService, CartItem $cartItem): JsonResponse
     {
         $UpdatedCartItem = new UpdateCartItem(
             quantity: $request->validated('quantity'),
         );
-        $updateCartItemService->execute($UpdatedCartItem,$cartItem);
+        $updateCartItemService->execute($UpdatedCartItem, $cartItem);
+
         return response()->json([
-            'آیتم ویرایش شد.'
+            'message' => 'آیتم ویرایش شد.',
         ]);
     }
 
     public function removeItemFromCart(RemoveCartItemService $removeCartItemService, CartItem $cartItem): JsonResponse
     {
         $removeCartItemService->execute($cartItem);
+
         return response()->json([
-            'message' => 'محصول از سبد خرید شما حذف شد.'
+            'message' => 'محصول از سبد خرید شما حذف شد.',
         ]);
     }
 }
