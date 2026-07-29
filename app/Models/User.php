@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Cart\Cart;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -37,5 +38,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany(Restaurant::class, 'restaurant_users')
             ->withPivot('role');
+    }
+    public function cart()
+    {
+        return $this->hasOne(Cart::class, 'user_id');
     }
 }
