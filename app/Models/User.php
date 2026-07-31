@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Models\Cart\Cart;
+use App\Models\Order\Order;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -40,8 +42,13 @@ class User extends Authenticatable implements JWTSubject
             ->withPivot('role');
     }
 
-    public function cart()
+    public function cart(): HasOne
     {
         return $this->hasOne(Cart::class, 'user_id');
+    }
+
+    public function order(): HasOne
+    {
+        return $this->hasOne(Order::class, 'user_id');
     }
 }

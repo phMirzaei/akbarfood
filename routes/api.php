@@ -6,6 +6,7 @@ use App\Http\Controllers\Cart\CartItemController;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Operator\OperatorController;
 use App\Http\Controllers\Operator\RestaurantApprovalController;
+use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Restaurants\RestaurantController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +26,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('pending', [RestaurantApprovalController::class, 'getApprovalPendingRegister']);
         Route::patch('{restaurant}/approve', [RestaurantApprovalController::class, 'approveRestaurant']);
         Route::patch('{restaurant}/reject', [RestaurantApprovalController::class, 'rejectRestaurant']);
-
     });
     Route::middleware('restaurantOwner')->prefix('restaurants')->group(function () {
         Route::post('{restaurant}/add_menu_item', [MenuController::class, 'addMenuItems']);
@@ -36,6 +36,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('cart', [CartController::class, 'listCartItems']);
     Route::put('cart/items/{cartItem}', [CartItemController::class, 'updateCartItem']);
     Route::delete('cart/items/{cartItem}', [CartItemController::class, 'removeItemFromCart']);
+
+    Route::post('create_order', [OrderController::class, 'createOrder']);
+    Route::get('order', [OrderController::class, 'listOrder']);
 
 });
 Route::get('restaurants/{restaurant}/menu', [MenuController::class, 'listMenuItems']);
