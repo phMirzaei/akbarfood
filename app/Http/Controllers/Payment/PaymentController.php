@@ -36,7 +36,7 @@ class PaymentController extends Controller
 
         return response()->json([
             'message' => 'سفارش شما با موفقیت پرداخت شد.',
-            'سفارش' => $payment,
+            'پرداخت' => $payment,
 
         ]);
 
