@@ -7,6 +7,7 @@ use App\Models\Order\Order;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -47,8 +48,8 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Cart::class, 'user_id');
     }
 
-    public function order(): HasOne
+    public function orders(): HasMany
     {
-        return $this->hasOne(Order::class, 'user_id');
+        return $this->hasMany(Order::class, 'user_id');
     }
 }
