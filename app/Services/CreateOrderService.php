@@ -24,7 +24,7 @@ class CreateOrderService
                 $total_price += $cartItem->menu->price * $cartItem->quantity;
             }
             $order = Order::create([
-                'user_id' => auth()->id(),
+                'user_id' => $createOrder->userId,
                 'cart_id' => $cart->id,
                 'status' => 'pending',
                 'total_price' => $total_price,
