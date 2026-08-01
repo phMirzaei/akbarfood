@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->foreignId('order_id')->unique()->constrained()->onDelete('cascade');
             $table->string('transaction_id')->nullable();
             $table->unsignedBigInteger('amount');
             $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
@@ -21,6 +21,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('payment');
+        Schema::dropIfExists('payments');
     }
 };

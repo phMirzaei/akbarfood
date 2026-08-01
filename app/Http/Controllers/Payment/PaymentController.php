@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Payment;
 
+use App\DTOs\RequestPayment;
+use App\DTOs\VerifyPayment;
 use App\Http\Controllers\Controller;
 use App\Models\Order\Order;
 use App\Models\Payment\Payment;
@@ -13,7 +15,11 @@ class PaymentController extends Controller
 {
     public function sendRequestPayment(RequestPaymentService $requestPaymentService, Order $order): JsonResponse
     {
-        $requestPaymentService->execute($order);
+        $requestPayment = new RequestPayment(
+            userId: auth()->id(),
+            order: $order
+        );
+        $requestPaymentService->execute($requestPayment);
 
         return response()->json([
             'message' => 'در حال ارسال شما به درگاه پرداخت...',
@@ -22,7 +28,11 @@ class PaymentController extends Controller
 
     public function verifyPayment(VerifyPaymentService $verifyPaymentService, Payment $payment): JsonResponse
     {
-        $payment = $verifyPaymentService->execute($payment);
+        $verifyPayment = new VerifyPayment(
+            userId: auth()->id(),
+            payment: $payment
+        );
+        $payment = $verifyPaymentService->execute($verifyPayment);
 
         return response()->json([
             'message' => 'سفارش شما با موفقیت پرداخت شد.',

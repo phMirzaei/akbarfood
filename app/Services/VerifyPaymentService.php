@@ -2,31 +2,38 @@
 
 namespace App\Services;
 
+use App\DTOs\VerifyPayment;
+use App\Exceptions\AuthorizationException;
 use App\Exceptions\OrderAlreadyPaidException;
 use App\Exceptions\PaymentFailedException;
-use App\Models\Payment\Payment;
+use Illuminate\Support\Facades\DB;
 
 class VerifyPaymentService
 {
-    public function execute(Payment $payment)
+    public function execute(VerifyPayment $verifyPayment)
     {
-        if ($payment->status == 'failed') {
+        if ($verifyPayment->userId !== $verifyPayment->payment->order->user_id) {
+            throw new AuthorizationException;
+        }
+        if ($verifyPayment->payment->status == 'failed') {
             throw new PaymentFailedException;
         }
-        if ($payment->status == 'paid') {
+        if ($verifyPayment->payment->status == 'paid') {
             throw new OrderAlreadyPaidException;
         }
-        $payment->update([
-            'status' => 'paid',
-            'transaction_id' => random_int(50000, 100000),
-            'paid_at' => now(),
-        ]);
+        DB::transaction(function () use ($verifyPayment) {
+            $verifyPayment->payment->update([
+                'status' => 'paid',
+                'transaction_id' => random_int(50000, 100000),
+                'paid_at' => now(),
+            ]);
 
-        $payment->order()->update([
-            'status' => 'paid',
-        ]);
+            $verifyPayment->payment->order()->update([
+                'status' => 'paid',
+            ]);
+        });
 
-        return $payment->fresh();
+        return $verifyPayment->payment->fresh();
 
     }
 }

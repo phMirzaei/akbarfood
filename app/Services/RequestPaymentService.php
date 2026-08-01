@@ -2,21 +2,26 @@
 
 namespace App\Services;
 
+use App\DTOs\RequestPayment;
+use App\Exceptions\AuthorizationException;
 use App\Exceptions\OrderAlreadyPaidException;
-use App\Models\Order\Order;
 use App\Models\Payment\Payment;
 
 class RequestPaymentService
 {
-    public function execute(Order $order)
+    public function execute(RequestPayment $requestPayment)
     {
-        if ($order->status !== 'pending') {
+        if ($requestPayment->userId !== $requestPayment->order->user_id) {
+            throw new AuthorizationException;
+        }
+        if ($requestPayment->order->status !== 'pending') {
             throw new OrderAlreadyPaidException;
         }
-        Payment::create([
-            'order_id' => $order->id,
-            'amount' => $order->total_price,
-            'status' => $order->status,
+
+        return Payment::create([
+            'order_id' => $requestPayment->order->id,
+            'amount' => $requestPayment->order->total_price,
+            'status' => 'pending',
         ]);
     }
 }

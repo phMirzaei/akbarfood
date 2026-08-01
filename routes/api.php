@@ -42,7 +42,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('order', [OrderController::class, 'listOrder']);
 
     Route::post('{order}/payment', [PaymentController::class, 'sendRequestPayment']);
-    Route::post('{payment}/payment2', [PaymentController::class, 'verifyPayment']);
+    Route::post('{payment}/verify_payment', [PaymentController::class, 'verifyPayment']);
 
 });
 Route::get('restaurants/{restaurant}/menu', [MenuController::class, 'listMenuItems']);
