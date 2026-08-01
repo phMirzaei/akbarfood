@@ -17,6 +17,9 @@ class RequestPaymentService
         if ($requestPayment->order->status !== 'pending') {
             throw new OrderAlreadyPaidException;
         }
+        if ($requestPayment->order->payment()->exists()) {
+            throw new OrderAlreadyPaidException;
+        }
 
         return Payment::create([
             'order_id' => $requestPayment->order->id,
