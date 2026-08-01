@@ -7,6 +7,7 @@ use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Operator\OperatorController;
 use App\Http\Controllers\Operator\RestaurantApprovalController;
 use App\Http\Controllers\Order\OrderController;
+use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Restaurants\RestaurantController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +40,9 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('create_order', [OrderController::class, 'createOrder']);
     Route::get('order', [OrderController::class, 'listOrder']);
+
+    Route::post('{order}/payment', [PaymentController::class, 'sendRequestPayment']);
+    Route::post('{payment}/verify_payment', [PaymentController::class, 'verifyPayment']);
 
 });
 Route::get('restaurants/{restaurant}/menu', [MenuController::class, 'listMenuItems']);
