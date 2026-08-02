@@ -40,6 +40,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('create_order', [OrderController::class, 'createOrder']);
     Route::get('order', [OrderController::class, 'listOrder']);
+    Route::put('{order}/cancel_order', [OrderController::class, 'cancelOrder']);
 
     Route::post('{order}/payment', [PaymentController::class, 'sendRequestPayment']);
     Route::post('{payment}/verify_payment', [PaymentController::class, 'verifyPayment']);
