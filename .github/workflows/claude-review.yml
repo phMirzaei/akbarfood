@@ -45,7 +45,7 @@ jobs:
               🚨 (security), 🔒 (atomicity), 🌐 (i18n), 🐧 (platform-specific), 🧹 (dead code),
               🧟 (unused/orphaned), 🗑️ (shouldn't be committed), 🔁 (regression), ⏰ (time/expiry),
               🗄️ (database), 📡 (protocol/HTTP), 🤐 (silent failure), ℹ️ (FYI/no-action),
-              🏗️ (business rule in the wrong layer).
+              🏗️ (business rule in the wrong layer), ✏️ (naming), 🏷️ (API surface).
 
             # What to post
 
@@ -158,6 +158,44 @@ jobs:
             - A DTO/Service name that breaks the pairing above (wrong suffix, mismatched names,
               an entry point not called `execute()`).
 
+            ## The DTO must be the whole command
+
+            `execute()` takes **exactly one argument: the DTO**. Everything the action needs is
+            inside it — the id of the thing being acted on, the new values, and the id of the user
+            doing it.
+
+            **The test:** *could you `json_encode()` this DTO, put it on a queue, and have the
+            Service do the right thing from that alone?* If not, the command is incomplete.
+
+            Flag every one of these — they are the most common way this codebase drifts:
+
+            - `execute($dto, $restaurant, $menuItem)` — identity passed *beside* the command.
+              The DTO describes the values but not the target, so it is only half a command.
+              Move `restaurantId` and `menuItemId` into the DTO.
+            - `auth()->id()`, `Auth::user()` or `request()` **inside a Service**. That is HTTP
+              reaching into the application layer. The controller reads it and passes `actorId`
+              in the DTO. A Service that calls `auth()` cannot be run from a job, a command, or
+              a test.
+            - A DTO property typed `UploadedFile`, `Request`, or any `Illuminate\Http\*` class.
+              The controller stores the file and passes a `string $imagePath`.
+            - A DTO property typed as an Eloquent model (`public Order $order`). Carry
+              `public int $orderId` and let the Service load it. Otherwise "does this row exist?"
+              is silently delegated to route-model binding, which only exists over HTTP.
+            - An action performed on a user's behalf whose DTO has no `actorId`. A Service cannot
+              enforce a permission about a user it never receives — this is exactly how
+              authorization ends up stranded in middleware.
+
+            ## Layer names mean something
+
+            - `*Service` is reserved for **use cases** with an `execute()` method. An interface
+              that talks to the outside world is a **port** — name it `Notifier`,
+              `PaymentGateway`, `SmsGateway`. Never `SomethingService`.
+            - A class that calls a third party (HTTP, SMS, payment provider) is an **adapter**.
+              It belongs in `app/Infrastructure/`, not beside the use cases in `app/Services/`.
+            - Flag a new outbound integration written inline inside a Service instead of behind
+              an interface bound in `AppServiceProvider`. `NotificationService` is the pattern to
+              copy.
+
             # Business rules — only a Service may hold one
 
             A **business rule** is any decision the business could change without the software
@@ -171,9 +209,10 @@ jobs:
             is only enforced somewhere HTTP-specific or DB-specific, that is the bug — every
             other caller skips it.
 
-            `ApproveRestaurantService::execute` is the model to point to: it checks
-            `status !== 'pending'` and throws a `DomainException`. The rule sits in the Service,
-            so every caller gets it.
+            `ApproveRestaurantService::execute` gets the *layer* right: the check sits in the
+            Service, so every caller gets it. But note how it is written — `status !== 'pending'`
+            reaches into the entity and judges it from outside. See "Entities own their own
+            state" below for the shape new code should use instead.
 
             **Controller — no rules at all.** Build the DTO, call `$service->execute($dto)`,
             return the response. Nothing else. Flag any `if` about domain state, any calculation,
@@ -205,6 +244,81 @@ jobs:
             layer* — never just "this belongs in a service". Name the layer and say why that
             layer owns it. The author is learning the pattern, not being audited against it.
 
+            # Entities own their own state
+
+            We are deliberately moving from an anemic model to a rich one. Eloquent models are our
+            entities, and an entity carries **behaviour about its own state** — not just columns
+            and relationships.
+
+            A Service **orchestrates**: it loads entities, asks them questions, tells them to
+            change, and saves. It does not reach inside and judge.
+
+            Flag these:
+
+            - A raw status comparison in a Service — `$order->status == 'paid'`,
+              `$restaurant->status !== 'approved'`. Ask the entity instead:
+
+              ```diff
+              -if ($restaurant->status !== 'approved') {
+              +if (! $restaurant->isApproved()) {
+                   throw new RestaurantNotApprovedException;
+               }
+              ```
+
+            - A **status string literal anywhere in PHP**. Statuses, roles and categories are PHP
+              backed enums cast on the model. A typo in a string comparison is a branch that is
+              silently never true; a typo in an enum case is an error PHP refuses to run.
+            - A **calculation duplicated across two Services** — a total, a fee, a count. Put it
+              on the entity once (`Cart::total()`). Two copies always drift apart, and on this
+              project that already caused a real bug where the cart showed one price and the order
+              charged another.
+            - A **private Service method whose only parameter is an entity** — e.g.
+              `shouldLimitAttempts(Otp $otp)`. That is a method on the entity, in the wrong class.
+              This is the quickest smell test; apply it to every new private helper.
+            - A **state change written as an anonymous field update** —
+              `$order->update(['status' => 'cancelled'])`. Prefer a named transition,
+              `$order->cancel()`, that enforces its own preconditions and throws. `update()` says
+              which field to write; `cancel()` says what happened, and only the second can carry
+              a rule.
+
+            **The limit — do not ask for a God model.** Entity methods stay pure: no queries, no
+            `save()`, no notifications, no side effects. Loading, transactions and persistence
+            remain in the Service. If a method needs to touch another table, it belongs in the
+            Service. Do not flag a Service for doing orchestration.
+
+            # API surface
+
+            The API is a contract. Flag:
+
+            - **A controller returning a raw Eloquent model or collection.** Wrap it in an API
+              Resource (`app/Http/Resources/`), so renaming a column does not break every client,
+              and so internal fields are not exposed.
+            - **Translated text used as a JSON key** — `'نام رستوران:' => $restaurant->name`.
+              Persian belongs in the response *values*; keys stay stable English identifiers.
+            - **A `POST` that creates something but returns only a message.** Return the created
+              resource and `201`. Several endpoints on this project are unreachable by a real
+              client because the id is never revealed.
+            - **A route path that repeats the HTTP verb** — `POST .../add_menu_item`,
+              `DELETE .../remove_menu_item`. The method already says it: `POST .../menu-items`.
+            - **A route id with no collection segment** — `/api/{order}/payment`. Ids live under
+              a plural collection: `/api/orders/{order}/payments`.
+            - **Inconsistent path casing.** kebab-case everywhere; do not mix in `snake_case`.
+            - **A route placeholder bound in one controller and not another.** Implicit binding
+              only fires when the controller type-hints the model, so `$this->route('restaurant')`
+              can be a model in one FormRequest and a string in another. Both "work" until someone
+              adds a type-hint, and then a scoping check silently stops checking.
+            - **A list endpoint with no pagination.**
+
+            # Tests
+
+            A new Service or endpoint should arrive with at least one test. The architecture is
+            built for it: Services are plain classes, collaborators arrive through the
+            constructor, DTOs mean no HTTP is required, and ports can be faked.
+
+            Flag a new use case with no test as ℹ️ FYI on the first offence — do not block on it,
+            but do say what the test would have caught. Use `Http::fake()` so tests never call
+            Telegram.
+
             # PSR
 
             **Formatting is not your job.** Laravel Pint enforces PSR-12 mechanically in CI on
@@ -235,6 +349,21 @@ jobs:
                If you want safer migration semantics, suggest `->default(...)` with a meaningful
                default instead. Never suggest blanket nullability.
 
+            # Security and resilience
+
+            - **Sensitive uploads must not go on the `public` disk.** Menu images are fine; legal
+              documents (permit scans, ID cards) are not — anything on `public` is served with no
+              login and no ownership check. Use the `local` disk plus a controller that checks
+              permission.
+            - **Public endpoints need a `throttle`.** Any unauthenticated route, and any route
+              that triggers an outbound call or costs money, needs a rate limit.
+            - **Third-party calls do not belong in the request path.** An HTTP call to Telegram,
+              an SMS gateway, or a payment provider should be dispatched to the queue. Otherwise
+              their downtime becomes our 500 — and the user is left with state already written.
+            - **A write plus its compensating cleanup must live in one place.** If a file is
+              stored in the controller and deleted in the Service's `DB::afterRollBack`, a throw
+              in between orphans the file.
+
             # Recurring issues to watch for
 
             - `docker/nginx/default.conf:/etc/nginx/conf.d/default.conf` losing its `:ro` suffix
@@ -243,6 +372,14 @@ jobs:
               bug each time.
             - Editor backup files (`*~`, `*.swp`, `*.bak`) accidentally committed.
             - `Otp::create()` after the unique-phone constraint — use `updateOrCreate` instead.
+            - A model in a folder named after itself (`App\Models\Payment\Payment`). The stutter
+              makes a non-existent class name look plausible — it already caused `config/auth.php`
+              to import `App\Models\Restaurant`, which does not exist.
+            - An exception in `app/Exceptions/` whose name shadows a framework class
+              (`ModelNotFoundException`, `AuthorizationException`). A wrong `use` statement then
+              produces a `catch` that never fires, with no error anywhere.
+            - A new env var read in `config/` but missing from `.env.example` — a fresh clone
+              gets `null` and fails at runtime.
 
             # Behavior
 
@@ -250,3 +387,10 @@ jobs:
             - Verify whether a "fix" introduces a new bug elsewhere — multiple prior PRs have
               fixed one direction and broken another.
             - Don't invent issues to look thorough. A clean PR deserves a short approval.
+            - The full architecture standard, with worked examples and the open backlog, lives in
+              `docs/architecture-review.md` — read §1 if you need detail on the layering rules or
+              the rich-model goal. This prompt is the short version; that file is the source of
+              truth.
+            - **Still only post required findings.** These rules widen what counts as required,
+              but they do not change the volume rule: pick the few findings that matter most on
+              this PR. A wall of architecture comments teaches nothing.
