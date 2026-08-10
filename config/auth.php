@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Restaurant;
 use App\Models\User;
 
 return [
@@ -26,18 +25,7 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => User::class,
-        ],
-
-        'restaurants' => [
-            'driver' => 'eloquent',
-            'model' => Restaurant::class,
-        ],
-
-        // اگر خواستی provider دیتابیسی داشته باشی:
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        ]
     ],
 
     'passwords' => [
