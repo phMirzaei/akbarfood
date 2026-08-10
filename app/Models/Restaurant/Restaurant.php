@@ -4,15 +4,12 @@ namespace App\Models\Restaurant;
 
 use App\Models\Menu\Menu;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Restaurant extends Model
 {
-    use HasFactory;
-
     protected $fillable = ['name', 'permit_scan', 'landline_number', 'city', 'street', 'alley', 'status', 'created_at', 'updated_at', 'vendor_type'];
 
     public function users(): BelongsToMany
