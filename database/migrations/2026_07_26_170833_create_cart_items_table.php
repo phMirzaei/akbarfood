@@ -15,6 +15,7 @@ return new class extends Migration
             $table->unsignedInteger('price');
             $table->unsignedInteger('quantity')->default(1);
             $table->timestamps();
+            $table->unique(['cart_id', 'menu_id']);
         });
     }
 
