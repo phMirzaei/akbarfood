@@ -25,7 +25,7 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => User::class,
-        ]
+        ],
     ],
 
     'passwords' => [
