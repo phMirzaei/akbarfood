@@ -36,11 +36,11 @@ class VerifyPhoneNumberService
     {
         $payload = $otp->payload ?? [];
 
-        return User::create(
-            [
-                'phone' => $otp->phone,
-                'name' => $payload['name'] ?? 'کاربر',
-            ]
+        return User::firstOrCreate(
+
+            ['phone' => $otp->phone],
+            ['name' => $payload['name'] ?? 'کاربر']
+
         );
     }
 

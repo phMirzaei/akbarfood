@@ -5,9 +5,7 @@ namespace App\Services;
 use App\DTOs\RequestPhoneNumberVerification;
 use App\Exceptions\OtpBlockedException;
 use App\Exceptions\OtpTooManyRequestException;
-use App\Exceptions\PhoneAlreadyRegisteredException;
 use App\Models\Otp;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class RequestPhoneNumberVerificationService
@@ -18,10 +16,6 @@ class RequestPhoneNumberVerificationService
 
     public function execute(RequestPhoneNumberVerification $requestPhoneNumberVerification): void
     {
-        if (User::where('phone', $requestPhoneNumberVerification->phone)->exists()) {
-            throw new PhoneAlreadyRegisteredException;
-        }
-
         $otp = Otp::where('phone', $requestPhoneNumberVerification->phone)->first();
         if ($otp instanceof Otp) {
             if ($otp->next_allowed_request_otp->isFuture()) {
