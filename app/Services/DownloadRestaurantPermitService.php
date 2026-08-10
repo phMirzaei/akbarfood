@@ -3,12 +3,15 @@
 namespace App\Services;
 
 use App\DTOs\DownloadRestaurantPermit;
+use App\Models\Restaurant\Restaurant;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadRestaurantPermitService
 {
     public function execute(DownloadRestaurantPermit $downloadRestaurantPermit)
     {
-        return Storage::disk('local')->download($downloadRestaurantPermit->restaurant->permit_scan);
-}
+        $restaurant = Restaurant::findOrFail($downloadRestaurantPermit->restaurantId);
+
+        return Storage::disk('local')->download($restaurant->permit_scan);
+    }
 }

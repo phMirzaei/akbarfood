@@ -27,7 +27,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('pending', [RestaurantApprovalController::class, 'getApprovalPendingRegister']);
         Route::patch('{restaurant}/approve', [RestaurantApprovalController::class, 'approveRestaurant']);
         Route::patch('{restaurant}/reject', [RestaurantApprovalController::class, 'rejectRestaurant']);
-        Route::get('{restaurant}/get_permit', [RestaurantController::class, 'getPermit']);
+        Route::get('{restaurant}/permit', [RestaurantController::class, 'getPermit']);
     });
     Route::middleware('restaurantOwner')->prefix('restaurants')->group(function () {
         Route::post('{restaurant}/add_menu_item', [MenuController::class, 'addMenuItems']);

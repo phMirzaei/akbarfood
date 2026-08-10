@@ -35,10 +35,10 @@ class RestaurantController extends Controller
         ], 201);
     }
 
-    public function getPermit(DownloadRestaurantPermitService $service,Restaurant $restaurant)
+    public function getPermit(DownloadRestaurantPermitService $service, Restaurant $restaurant)
     {
         return $service->execute(
-            new DownloadRestaurantPermit($restaurant),
+            new DownloadRestaurantPermit(restaurantId: $restaurant->id),
         );
-}
+    }
 }

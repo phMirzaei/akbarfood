@@ -2,14 +2,9 @@
 
 namespace App\DTOs;
 
-use App\Models\Restaurant\Restaurant;
-
-readonly final class DownloadRestaurantPermit
+final readonly class DownloadRestaurantPermit
 {
     public function __construct(
-        public Restaurant $restaurant,
-    )
-    {
-
-}
+        public int $restaurantId,
+    ) {}
 }
