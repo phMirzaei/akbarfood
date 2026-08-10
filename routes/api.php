@@ -11,7 +11,7 @@ use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Restaurants\RestaurantController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('auth')->group(function () {
+Route::prefix('auth')->middleware('throttle:6,1')->group(function () {
     Route::post('request-otp', [AuthController::class, 'requestOtp']);
     Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
 });
