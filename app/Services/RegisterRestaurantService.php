@@ -12,7 +12,7 @@ class RegisterRestaurantService
     public function execute(RegisterRestaurant $registerRestaurant, int $ownerId)
     {
         DB::transaction(function () use ($registerRestaurant, $ownerId) {
-            DB::afterRollBack(fn () => Storage::disk('public')->delete($registerRestaurant->permit_scan));
+            DB::afterRollBack(fn () => Storage::disk('local')->delete($registerRestaurant->permit_scan));
             $restaurant = Restaurant::create([
                 'name' => $registerRestaurant->name,
                 'permit_scan' => $registerRestaurant->permit_scan,
