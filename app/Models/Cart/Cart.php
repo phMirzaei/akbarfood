@@ -28,4 +28,11 @@ class Cart extends Model
     {
         return $this->hasOne(Order::class);
     }
+
+    public function total(): int
+    {
+        return $this->items->sum(
+            fn ($item) => $item->menu->price * $item->quantity
+        );
+    }
 }

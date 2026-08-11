@@ -40,6 +40,8 @@ class CreateOrderService
             }
 
             $cart->items()->delete();
+
+            return $order;
         });
 
     }

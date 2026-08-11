@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTOs\VerifyPayment;
 use App\Exceptions\AuthorizationException;
+use App\Exceptions\OrderAlreadyCancelledException;
 use App\Exceptions\OrderAlreadyPaidException;
 use App\Exceptions\PaymentFailedException;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,9 @@ class VerifyPaymentService
         }
         if ($verifyPayment->payment->status == 'paid') {
             throw new OrderAlreadyPaidException;
+        }
+        if ($verifyPayment->payment->order->status === 'cancelled') {
+            throw new OrderAlreadyCancelledException;
         }
         DB::transaction(function () use ($verifyPayment) {
             $verifyPayment->payment->update([
