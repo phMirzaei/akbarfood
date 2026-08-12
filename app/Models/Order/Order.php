@@ -39,10 +39,27 @@ class Order extends Model
         return $this->status === 'cancelled';
     }
 
+    public function isPaid(): bool
+    {
+        return $this->status === 'paid';
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
     public function markAsPaid(): void
     {
         $this->update([
             'status' => 'paid',
+        ]);
+    }
+
+    public function cancel(): void
+    {
+        $this->update([
+            'status' => 'cancelled',
         ]);
     }
 }

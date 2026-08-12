@@ -13,7 +13,7 @@ class AddMenuItemService
 {
     public function execute(AddMenuItem $addMenuItem, Restaurant $restaurant)
     {
-        if ($restaurant->status !== 'approved') {
+        if (! $restaurant->isApproved()) {
             throw new RestaurantNotApprovedException;
         }
         DB::transaction(function () use ($addMenuItem, $restaurant) {

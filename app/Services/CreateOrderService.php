@@ -19,10 +19,7 @@ class CreateOrderService
             if ($cart->items->isEmpty()) {
                 throw new CartIsEmptyException;
             }
-            $total_price = 0;
-            foreach ($cart->items as $cartItem) {
-                $total_price += $cartItem->menu->price * $cartItem->quantity;
-            }
+            $total_price = $cart->total();
             $order = Order::create([
                 'user_id' => $createOrder->userId,
                 'cart_id' => $cart->id,

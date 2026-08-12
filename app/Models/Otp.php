@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 
 class Otp extends Model
 {
@@ -18,5 +19,16 @@ class Otp extends Model
             'payload' => 'array',
             'next_allowed_request_otp' => 'datetime',
         ];
+
+    }
+
+    public function matches(string $code): bool
+    {
+        return Hash::check($code, $this->code);
+    }
+
+    public function shouldLimitAttempts(): bool
+    {
+        return ($this->attempts + 1) >= 3;
     }
 }

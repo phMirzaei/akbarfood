@@ -31,8 +31,6 @@ class Cart extends Model
 
     public function total(): int
     {
-        $this->loadMissing('items.menu');
-
         return $this->items->sum(
             fn ($item) => $item->menu->price * $item->quantity
         );

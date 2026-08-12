@@ -7,11 +7,11 @@ use App\Models\User;
 
 class PromoteToOperatorService
 {
-    public function execute(PromoteToOperator $promoteToOperator)
+    public function execute(PromoteToOperator $promoteToOperator): void
     {
         $userId = $promoteToOperator->userId;
         $user = User::findOrFail($userId);
-        $user->role = 'operator';
+        $user->makeOperator();
         $user->save();
     }
 }

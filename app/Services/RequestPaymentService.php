@@ -14,7 +14,7 @@ class RequestPaymentService
         if ($requestPayment->userId !== $requestPayment->order->user_id) {
             throw new UnauthorizedOrderActionException;
         }
-        if ($requestPayment->order->status !== 'pending') {
+        if (! $requestPayment->order->isPending()) {
             throw new OrderAlreadyPaidException;
         }
         if ($requestPayment->order->payment()->exists()) {

@@ -13,12 +13,10 @@ class ApproveRestaurantService
     public function execute(ApproveRestaurant $approveRestaurant)
     {
         $restaurant = Restaurant::findOrFail($approveRestaurant->restaurantId);
-        if ($restaurant->status !== 'pending') {
+        if (! $restaurant->isPending()) {
             throw new \DomainException('این درخواست قبلاً بررسی شده است.');
         }
-        $restaurant->update(
-            ['status' => 'approved']
-        );
+        $restaurant->approve();
         $owner = $restaurant->owner()->first();
         $this->notificationService->send($owner->phone, 'درخواست ثبت رستوران شما تایید شد.');
     }
