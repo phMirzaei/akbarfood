@@ -14,7 +14,7 @@ class RemoveMenuItemService
         if ($menuItem->restaurant_id != $restaurant->id) {
             throw new MenuItemNotInRestaurantException;
         }
-        if ($restaurant->status !== 'approved') {
+        if (! $restaurant->isApproved()) {
             throw new RestaurantNotApprovedException;
         }
         $menuItem->delete();

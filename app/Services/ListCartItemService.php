@@ -27,7 +27,7 @@ class ListCartItemService
 
         return [
             'items' => $items,
-            'total' => $items->sum('total_price'),
+            'total' => $cart->total(),
         ];
 
     }

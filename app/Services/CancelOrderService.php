@@ -14,14 +14,13 @@ class CancelOrderService
         if ($cancelOrder->order->user_id !== $cancelOrder->userId) {
             throw new UnauthorizedOrderActionException;
         }
-        if ($cancelOrder->order->status == 'paid') {
+        if ($cancelOrder->order->isPaid()) {
             throw new OrderAlreadyPaidException;
         }
-        if ($cancelOrder->order->status == 'cancelled') {
+        if ($cancelOrder->order->isCancelled()) {
             throw new OrderAlreadyCancelledException;
         }
-        $cancelOrder->order->update([
-            'status' => 'cancelled',
-        ]);
+        $cancelOrder->order->cancel();
+        $cancelOrder->order->save();
     }
 }

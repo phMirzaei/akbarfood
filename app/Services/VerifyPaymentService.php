@@ -29,8 +29,10 @@ class VerifyPaymentService
             $verifyPayment->payment->markAsPaid(
                 (string) random_int(50000, 100000)
             );
+            $verifyPayment->payment->save();
 
             $verifyPayment->payment->order->markAsPaid();
+            $verifyPayment->payment->order->save();
         });
 
         return $verifyPayment->payment->fresh();

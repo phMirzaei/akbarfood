@@ -29,4 +29,19 @@ class Restaurant extends Model
             ->withPivot('role')
             ->wherePivot('role', 'owner');
     }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
+    }
+
+    public function approve(): void
+    {
+        $this->status = 'approved';
+    }
 }

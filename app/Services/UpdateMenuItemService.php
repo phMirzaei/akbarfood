@@ -17,7 +17,7 @@ class UpdateMenuItemService
         if ($menuItem->restaurant_id != $restaurant->id) {
             throw new MenuItemNotInRestaurantException;
         }
-        if ($restaurant->status !== 'approved') {
+        if (! $restaurant->isApproved()) {
             throw new RestaurantNotApprovedException;
         }
         DB::transaction(function () use ($updateMenuItem, $menuItem) {

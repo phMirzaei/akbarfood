@@ -14,4 +14,9 @@ class Menu extends Model
     {
         return $this->belongsTo(Restaurant::class);
     }
+
+    public function isAvailable(): bool
+    {
+        return $this->is_available;
+    }
 }

@@ -14,7 +14,7 @@ class AddItemToCartService
     {
         DB::transaction(function () use ($addItemToCart) {
             $menu = Menu::findOrFail($addItemToCart->menu_id);
-            if (! $menu->is_available) {
+            if (! $menu->isAvailable()) {
                 throw new MenuItemNotAvailableException;
             }
             $cart = Cart::firstOrCreate(['user_id' => auth()->id()]);

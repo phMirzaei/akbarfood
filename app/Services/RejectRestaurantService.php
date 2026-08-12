@@ -15,7 +15,7 @@ class RejectRestaurantService
     public function execute(RejectRestaurant $rejectRestaurant)
     {
         $restaurant = Restaurant::findOrFail($rejectRestaurant->restaurantId);
-        if ($restaurant->status !== 'pending') {
+        if (! $restaurant->isPending()) {
             throw new \DomainException('این درخواست قبلاً بررسی شده است.');
         }
         DB::transaction(function () use ($restaurant) {
