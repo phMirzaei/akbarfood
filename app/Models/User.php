@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use App\Models\Cart\Cart;
 use App\Models\Order\Order;
 use App\Models\Restaurant\Restaurant;
@@ -22,6 +23,13 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'role',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => UserRole::class,
+        ];
+    }
 
     public $timestamps = false;
 
@@ -55,6 +63,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function makeOperator(): void
     {
-        $this->role = 'operator';
+        $this->role = UserRole::Operator;
     }
 }
