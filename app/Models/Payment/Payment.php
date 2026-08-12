@@ -23,6 +23,14 @@ class Payment extends Model
     public function isFailed(): bool
     {
         return $this->status === 'failed';
+    }
 
+    public function markAsPaid(string $transactionId): void
+    {
+        $this->update([
+            'status' => 'paid',
+            'transaction_id' => $transactionId,
+            'paid_at' => now(),
+        ]);
     }
 }
