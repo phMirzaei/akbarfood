@@ -51,9 +51,7 @@ class Order extends Model
 
     public function markAsPaid(): void
     {
-        $this->update([
-            'status' => 'paid',
-        ]);
+        $this->status = 'paid';
     }
 
     public function cancel(): void

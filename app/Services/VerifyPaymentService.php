@@ -31,6 +31,7 @@ class VerifyPaymentService
             );
 
             $verifyPayment->payment->order->markAsPaid();
+            $verifyPayment->payment->order->save();
         });
 
         return $verifyPayment->payment->fresh();
