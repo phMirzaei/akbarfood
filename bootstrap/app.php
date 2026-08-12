@@ -1,10 +1,9 @@
 <?php
 
-use App\Exceptions\AuthorizationException;
 use App\Exceptions\CartIsEmptyException;
 use App\Exceptions\CartItemNotFoundException;
 use App\Exceptions\MenuItemNotAvailableException;
-use App\Exceptions\ModelNotFoundException;
+use App\Exceptions\MenuItemNotInRestaurantException;
 use App\Exceptions\OrderAlreadyCancelledException;
 use App\Exceptions\OrderAlreadyPaidException;
 use App\Exceptions\OtpBlockedException;
@@ -14,6 +13,7 @@ use App\Exceptions\OtpTooManyAttemptsException;
 use App\Exceptions\OtpTooManyRequestException;
 use App\Exceptions\PaymentFailedException;
 use App\Exceptions\RestaurantNotApprovedException;
+use App\Exceptions\UnauthorizedOrderActionException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\OperatorMiddleware;
 use App\Http\Middleware\RestaurantOwnerMiddleware;
@@ -37,7 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(
-            fn (AuthorizationException $e) => response()->json([
+            fn (UnauthorizedOrderActionException $e) => response()->json([
                 'message' => 'این سفارش متعلق به شما نیست.',
             ], 403)
         );
@@ -57,7 +57,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 422)
         );
         $exceptions->render(
-            fn (ModelNotFoundException $e) => response()->json([
+            fn (MenuItemNotInRestaurantException $e) => response()->json([
                 'message' => 'این آیتم منو متعلق به این رستوران نیست.',
             ], 404)
         );

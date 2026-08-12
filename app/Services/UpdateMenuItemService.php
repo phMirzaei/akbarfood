@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\DTOs\UpdateMenuItem;
-use App\Exceptions\ModelNotFoundException;
+use App\Exceptions\MenuItemNotInRestaurantException;
 use App\Exceptions\RestaurantNotApprovedException;
 use App\Models\Menu\Menu;
 use App\Models\Restaurant\Restaurant;
@@ -15,7 +15,7 @@ class UpdateMenuItemService
     public function execute(UpdateMenuItem $updateMenuItem, Restaurant $restaurant, Menu $menuItem)
     {
         if ($menuItem->restaurant_id != $restaurant->id) {
-            throw new ModelNotFoundException;
+            throw new MenuItemNotInRestaurantException;
         }
         if ($restaurant->status !== 'approved') {
             throw new RestaurantNotApprovedException;

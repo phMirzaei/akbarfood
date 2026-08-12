@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\DTOs\VerifyPayment;
-use App\Exceptions\AuthorizationException;
 use App\Exceptions\OrderAlreadyCancelledException;
 use App\Exceptions\OrderAlreadyPaidException;
 use App\Exceptions\PaymentFailedException;
+use App\Exceptions\UnauthorizedOrderActionException;
 use Illuminate\Support\Facades\DB;
 
 class VerifyPaymentService
@@ -14,7 +14,7 @@ class VerifyPaymentService
     public function execute(VerifyPayment $verifyPayment)
     {
         if ($verifyPayment->userId !== $verifyPayment->payment->order->user_id) {
-            throw new AuthorizationException;
+            throw new UnauthorizedOrderActionException;
         }
         if ($verifyPayment->payment->isFailed()) {
             throw new PaymentFailedException;
