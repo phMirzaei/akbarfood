@@ -43,11 +43,8 @@ class VerifyPhoneNumberService
 
         if (! $otp->matches($verifyPhoneNumber->code)) {
             if ($otp->shouldLimitAttempts()) {
-                $otp->update([
-                    'attempts' => 4,
-                    'blocked_until' => now()->addHours(12),
-                ]);
-
+                $otp->block();
+                $otp->save();
                 throw new OtpTooManyAttemptsException;
             }
 

@@ -58,8 +58,6 @@ class Order extends Model
 
     public function cancel(): void
     {
-        $this->update([
-            'status' => 'cancelled',
-        ]);
+        $this->status = 'cancelled';
     }
 }

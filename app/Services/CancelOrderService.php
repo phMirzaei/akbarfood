@@ -21,5 +21,6 @@ class CancelOrderService
             throw new OrderAlreadyCancelledException;
         }
         $cancelOrder->order->cancel();
+        $cancelOrder->order->save();
     }
 }

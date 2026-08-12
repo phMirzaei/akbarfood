@@ -31,4 +31,10 @@ class Otp extends Model
     {
         return ($this->attempts + 1) >= 3;
     }
+
+    public function block(): void
+    {
+        $this->attempts = 4;
+        $this->blocked_until = now()->addHours(12);
+    }
 }
