@@ -16,13 +16,13 @@ class VerifyPaymentService
         if ($verifyPayment->userId !== $verifyPayment->payment->order->user_id) {
             throw new AuthorizationException;
         }
-        if ($verifyPayment->payment->status == 'failed') {
+        if ($verifyPayment->payment->isFailed()) {
             throw new PaymentFailedException;
         }
-        if ($verifyPayment->payment->status == 'paid') {
+        if ($verifyPayment->payment->isPaid()) {
             throw new OrderAlreadyPaidException;
         }
-        if ($verifyPayment->payment->order->status === 'cancelled') {
+        if ($verifyPayment->payment->order->isCancelled()) {
             throw new OrderAlreadyCancelledException;
         }
         DB::transaction(function () use ($verifyPayment) {

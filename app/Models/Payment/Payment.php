@@ -14,4 +14,15 @@ class Payment extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    public function isPaid(): bool
+    {
+        return $this->status === 'paid';
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->status === 'failed';
+
+    }
 }

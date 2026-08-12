@@ -33,4 +33,9 @@ class Order extends Model
     {
         return $this->hasOne(Payment::class);
     }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === 'cancelled';
+    }
 }
