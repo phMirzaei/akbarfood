@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\DTOs\RequestPayment;
-use App\Exceptions\AuthorizationException;
 use App\Exceptions\OrderAlreadyPaidException;
+use App\Exceptions\UnauthorizedOrderActionException;
 use App\Models\Payment\Payment;
 
 class RequestPaymentService
@@ -12,7 +12,7 @@ class RequestPaymentService
     public function execute(RequestPayment $requestPayment)
     {
         if ($requestPayment->userId !== $requestPayment->order->user_id) {
-            throw new AuthorizationException;
+            throw new UnauthorizedOrderActionException;
         }
         if ($requestPayment->order->status !== 'pending') {
             throw new OrderAlreadyPaidException;
