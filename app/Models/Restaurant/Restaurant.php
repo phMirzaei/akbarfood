@@ -42,6 +42,6 @@ class Restaurant extends Model
 
     public function approve(): void
     {
-        $this->update(['status' => 'approved']);
+        $this->status = 'approved';
     }
 }

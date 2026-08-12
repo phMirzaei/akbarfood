@@ -17,6 +17,7 @@ class ApproveRestaurantService
             throw new \DomainException('این درخواست قبلاً بررسی شده است.');
         }
         $restaurant->approve();
+        $restaurant->save();
         $owner = $restaurant->owner()->first();
         $this->notificationService->send($owner->phone, 'درخواست ثبت رستوران شما تایید شد.');
     }
