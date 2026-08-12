@@ -27,10 +27,8 @@ class Payment extends Model
 
     public function markAsPaid(string $transactionId): void
     {
-        $this->update([
-            'status' => 'paid',
-            'transaction_id' => $transactionId,
-            'paid_at' => now(),
-        ]);
+        $this->status = 'paid';
+        $this->transaction_id = $transactionId;
+        $this->paid_at = now();
     }
 }
