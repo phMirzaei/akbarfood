@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::table('restaurants', function (Blueprint $table) {
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->dropColumn('management_full_name');
+            $table->dropUnique('restaurants_phone_unique');
             $table->dropColumn('phone');
         });
     }
