@@ -21,7 +21,7 @@ class ListCartItemService
                 'name' => $item->menu->name,
                 'price' => $item->menu->price,
                 'quantity' => $item->quantity,
-                'total_price' => $item->price * $item->quantity,
+                'total_price' => $item->menu->price * $item->quantity,
             ];
         });
 

@@ -10,7 +10,7 @@ class OtpTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_is_blocked_after_four_wrong_otp_attempts(): void
+    public function test_user_is_blocked_after_three_wrong_otp_attempts(): void
     {
         $otp = Otp::create([
             'phone' => '09123456789',
