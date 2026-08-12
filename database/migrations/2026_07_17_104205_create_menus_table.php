@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->enum('category', ['Drink', 'Iranian_food', 'Fast_food', 'Dessert']);
+            $table->enum('category', ['drink', 'Iranian_food', 'Fast_food', 'dessert']);
             $table->string('image');
             $table->boolean('is_available');
             $table->unsignedInteger('price');
