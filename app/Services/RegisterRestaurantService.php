@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\DTOs\RegisterRestaurant;
+use App\Enums\UserRole;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -24,7 +25,7 @@ class RegisterRestaurantService
                 'status' => 'pending',
             ]);
             $restaurant->users()->attach($ownerId, [
-                'role' => 'owner',
+                'role' => UserRole::Owner->value,
             ]);
         });
     }

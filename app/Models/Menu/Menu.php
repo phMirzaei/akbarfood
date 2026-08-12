@@ -14,7 +14,7 @@ class Menu extends Model
     protected function casts(): array
     {
         return [
-            'status' => MenuCategory::class,
+            'category' => MenuCategory::class,
         ];
     }
 

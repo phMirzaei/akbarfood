@@ -7,4 +7,5 @@ enum UserRole: string
     case Admin = 'admin';
     case User = 'user';
     case Operator = 'operator';
+    case Owner = 'owner';
 }
