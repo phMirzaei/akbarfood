@@ -2,6 +2,7 @@
 
 namespace App\Models\Order;
 
+use App\Enums\OrderStatus;
 use App\Models\Cart\Cart;
 use App\Models\Payment\Payment;
 use App\Models\User;
@@ -13,6 +14,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Order extends Model
 {
     protected $fillable = ['user_id', 'cart_id', 'status', 'total_price', 'created_at', 'updated_at'];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => OrderStatus::class,
+        ];
+    }
 
     public function user(): BelongsTo
     {
@@ -36,26 +44,26 @@ class Order extends Model
 
     public function isCancelled(): bool
     {
-        return $this->status === 'cancelled';
+        return $this->status === OrderStatus::Cancelled;
     }
 
     public function isPaid(): bool
     {
-        return $this->status === 'paid';
+        return $this->status === OrderStatus::Paid;
     }
 
     public function isPending(): bool
     {
-        return $this->status === 'pending';
+        return $this->status === OrderStatus::Pending;
     }
 
     public function markAsPaid(): void
     {
-        $this->status = 'paid';
+        $this->status = OrderStatus::Paid;
     }
 
     public function cancel(): void
     {
-        $this->status = 'cancelled';
+        $this->status = OrderStatus::Cancelled;
     }
 }

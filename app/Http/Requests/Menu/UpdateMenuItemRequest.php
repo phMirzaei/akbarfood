@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Menu;
 
+use App\Enums\MenuCategory;
 use App\Models\Menu\Menu;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateMenuItemRequest extends FormRequest
 {
@@ -27,7 +29,7 @@ class UpdateMenuItemRequest extends FormRequest
                     ->ignore($this->route('menuItem')->id),
             ],
             'description' => 'required|string|min:8|max:100|regex:/^[\p{Arabic}\s\x{200C}\-]+$/u',
-            'category' => 'required|in:Drink,Iranian_food,Fast_food,Desert',
+            'category' => ['required', new Enum(MenuCategory::class)],
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'is_available' => 'required|boolean',
             'price' => 'required|integer|min:10000|max:5000000',

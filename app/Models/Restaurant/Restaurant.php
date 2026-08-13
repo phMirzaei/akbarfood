@@ -2,6 +2,9 @@
 
 namespace App\Models\Restaurant;
 
+use App\Enums\RestaurantStatus;
+use App\Enums\UserRole;
+use App\Enums\VendorType;
 use App\Models\Menu\Menu;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +14,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Restaurant extends Model
 {
     protected $fillable = ['name', 'permit_scan', 'landline_number', 'city', 'street', 'alley', 'status', 'created_at', 'updated_at', 'vendor_type'];
+
+    protected function casts(): array
+    {
+        return [
+            'status' => RestaurantStatus::class,
+            'vendor_type' => VendorType::class,
+        ];
+    }
 
     public function users(): BelongsToMany
     {
@@ -27,21 +38,21 @@ class Restaurant extends Model
     {
         return $this->belongsToMany(User::class, 'restaurant_users')
             ->withPivot('role')
-            ->wherePivot('role', 'owner');
+            ->wherePivot('role', UserRole::Owner->value);
     }
 
     public function isPending(): bool
     {
-        return $this->status === 'pending';
+        return $this->status === RestaurantStatus::Pending;
     }
 
     public function isApproved(): bool
     {
-        return $this->status === 'approved';
+        return $this->status === RestaurantStatus::Approved;
     }
 
     public function approve(): void
     {
-        $this->status = 'approved';
+        $this->status = RestaurantStatus::Approved;
     }
 }
