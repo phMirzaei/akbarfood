@@ -66,4 +66,9 @@ class Order extends Model
     {
         $this->status = OrderStatus::Cancelled;
     }
+
+    public function canBePaid(): bool
+    {
+        return $this->status === OrderStatus::Pending;
+    }
 }

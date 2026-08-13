@@ -16,15 +16,17 @@ class VerifyPaymentService
         if ($verifyPayment->userId !== $verifyPayment->payment->order->user_id) {
             throw new UnauthorizedOrderActionException;
         }
+
+        if ($verifyPayment->payment->order->isCancelled()) {
+            throw new OrderAlreadyCancelledException;
+        }
         if ($verifyPayment->payment->isFailed()) {
             throw new PaymentFailedException;
         }
         if ($verifyPayment->payment->isPaid()) {
             throw new OrderAlreadyPaidException;
         }
-        if ($verifyPayment->payment->order->isCancelled()) {
-            throw new OrderAlreadyCancelledException;
-        }
+
         DB::transaction(function () use ($verifyPayment) {
             $verifyPayment->payment->markAsPaid(
                 (string) random_int(50000, 100000)
