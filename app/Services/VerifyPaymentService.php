@@ -16,6 +16,9 @@ class VerifyPaymentService
         if ($verifyPayment->userId !== $verifyPayment->payment->order->user_id) {
             throw new UnauthorizedOrderActionException;
         }
+        if (! $verifyPayment->payment->order->canBePaid()) {
+            throw new OrderAlreadyPaidException;
+        }
         if ($verifyPayment->payment->isFailed()) {
             throw new PaymentFailedException;
         }

@@ -18,7 +18,7 @@ class Payment extends Model
         ];
     }
 
-    public function Order(): BelongsTo
+    public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
