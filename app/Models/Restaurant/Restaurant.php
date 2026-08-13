@@ -3,6 +3,7 @@
 namespace App\Models\Restaurant;
 
 use App\Enums\RestaurantStatus;
+use App\Enums\UserRole;
 use App\Enums\VendorType;
 use App\Models\Menu\Menu;
 use App\Models\User;
@@ -37,7 +38,7 @@ class Restaurant extends Model
     {
         return $this->belongsToMany(User::class, 'restaurant_users')
             ->withPivot('role')
-            ->wherePivot('role', 'owner');
+            ->wherePivot('role', UserRole::Owner->value);
     }
 
     public function isPending(): bool
