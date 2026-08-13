@@ -2,10 +2,9 @@
 
 namespace App\DTOs;
 
-final readonly class VerifyPayment
+final readonly class ListCartItem
 {
     public function __construct(
         public int $userId,
-        public int $paymentId
     ) {}
 }

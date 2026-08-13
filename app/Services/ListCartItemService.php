@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
+use App\DTOs\ListCartItem;
 use App\Models\Cart\Cart;
 
 class ListCartItemService
 {
-    public function execute(int $userId)
+    public function execute(ListCartItem $listCartItem)
     {
-        $cart = Cart::where('user_id', $userId)->first();
+        $cart = Cart::where('user_id', $listCartItem->userId)->first();
         if (! $cart) {
             return [
                 'items' => [],

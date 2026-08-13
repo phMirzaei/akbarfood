@@ -19,6 +19,7 @@ class MenuController extends Controller
     public function addMenuItems(MenuItemRequest $request, AddMenuItemService $menuService, Restaurant $restaurant): JsonResponse
     {
         $menuItem = new AddMenuItem(
+            restaurantId: $restaurant->id,
             name: $request->validated('name'),
             description: $request->validated('description'),
             category: $request->validated('category'),
@@ -26,7 +27,7 @@ class MenuController extends Controller
             is_available: $request->validated('is_available'),
             price: $request->validated('price'),
         );
-        $menuService->execute($menuItem, $restaurant);
+        $menuService->execute($menuItem);
 
         return response()->json([
             'message' => 'آیتم با موفقیت اضافه شد .',
@@ -44,6 +45,8 @@ class MenuController extends Controller
     public function updateMenuItems(UpdateMenuItemRequest $request, UpdateMenuItemService $updateMenuItemService, Restaurant $restaurant, Menu $menuItem): JsonResponse
     {
         $updateMenuItem = new UpdateMenuItem(
+            restaurantId: $restaurant->id,
+            menuId: $menuItem->id,
             name: $request->validated('name'),
             description: $request->validated('description'),
             category: $request->validated('category'),
@@ -51,7 +54,7 @@ class MenuController extends Controller
             is_available: $request->validated('is_available'),
             price: $request->validated('price'),
         );
-        $updateMenuItemService->execute($updateMenuItem, $restaurant, $menuItem);
+        $updateMenuItemService->execute($updateMenuItem);
 
         return response()->json([
             'message' => 'آیتم با موفقیت آپدیت شد.',

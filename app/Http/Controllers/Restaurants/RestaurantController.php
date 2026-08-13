@@ -17,6 +17,7 @@ class RestaurantController extends Controller
     {
         $path = $request->file('permit_scan')->store('permits', 'local');
         $dto = new RegisterRestaurant(
+            ownerId: auth()->id(),
             name: $request->validated('name'),
             permit_scan: $path,
             landline_number: $request->validated('landline_number'),
@@ -27,7 +28,6 @@ class RestaurantController extends Controller
         );
         $service->execute(
             $dto,
-            auth()->id()
         );
 
         return response()->json([

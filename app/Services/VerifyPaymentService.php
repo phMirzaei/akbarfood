@@ -7,37 +7,39 @@ use App\Exceptions\OrderAlreadyCancelledException;
 use App\Exceptions\OrderAlreadyPaidException;
 use App\Exceptions\PaymentFailedException;
 use App\Exceptions\UnauthorizedOrderActionException;
+use App\Models\Payment\Payment;
 use Illuminate\Support\Facades\DB;
 
 class VerifyPaymentService
 {
     public function execute(VerifyPayment $verifyPayment)
     {
-        if ($verifyPayment->userId !== $verifyPayment->payment->order->user_id) {
+        $payment = Payment::findOrFail($verifyPayment->paymentId);
+        if ($verifyPayment->userId !== $payment->order->user_id) {
             throw new UnauthorizedOrderActionException;
         }
 
-        if ($verifyPayment->payment->order->isCancelled()) {
+        if ($payment->order->isCancelled()) {
             throw new OrderAlreadyCancelledException;
         }
-        if ($verifyPayment->payment->isFailed()) {
+        if ($payment->isFailed()) {
             throw new PaymentFailedException;
         }
-        if ($verifyPayment->payment->isPaid()) {
+        if ($payment->isPaid()) {
             throw new OrderAlreadyPaidException;
         }
 
-        DB::transaction(function () use ($verifyPayment) {
-            $verifyPayment->payment->markAsPaid(
+        DB::transaction(function () use ($payment) {
+            $payment->markAsPaid(
                 (string) random_int(50000, 100000)
             );
-            $verifyPayment->payment->save();
+            $payment->save();
 
-            $verifyPayment->payment->order->markAsPaid();
-            $verifyPayment->payment->order->save();
+            $payment->order->markAsPaid();
+            $payment->order->save();
         });
 
-        return $verifyPayment->payment->fresh();
+        return $payment->fresh();
 
     }
 }

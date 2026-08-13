@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\Storage;
 
 class AddMenuItemService
 {
-    public function execute(AddMenuItem $addMenuItem, Restaurant $restaurant)
+    public function execute(AddMenuItem $addMenuItem)
     {
+        $restaurant = Restaurant::findOrFail($addMenuItem->restaurantId);
         if (! $restaurant->isApproved()) {
             throw new RestaurantNotApprovedException;
         }

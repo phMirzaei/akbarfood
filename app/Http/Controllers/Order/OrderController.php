@@ -32,7 +32,7 @@ class OrderController extends Controller
 
     public function cancelOrder(CancelOrderService $cancelOrderService, Order $order): JsonResponse
     {
-        $cancelOrder = new CancelOrder($order, auth()->id());
+        $cancelOrder = new CancelOrder(orderId: $order->id, userId: auth()->id());
         $cancelOrderService->execute($cancelOrder);
 
         return response()->json([

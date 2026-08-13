@@ -12,8 +12,10 @@ use Illuminate\Support\Facades\Storage;
 
 class UpdateMenuItemService
 {
-    public function execute(UpdateMenuItem $updateMenuItem, Restaurant $restaurant, Menu $menuItem)
+    public function execute(UpdateMenuItem $updateMenuItem): void
     {
+        $restaurant = Restaurant::findOrFail($updateMenuItem->restaurantId);
+        $menuItem = Menu::findOrFail($updateMenuItem->menuId);
         if ($menuItem->restaurant_id != $restaurant->id) {
             throw new MenuItemNotInRestaurantException;
         }

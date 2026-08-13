@@ -17,7 +17,7 @@ class AddItemToCartService
             if (! $menu->isAvailable()) {
                 throw new MenuItemNotAvailableException;
             }
-            $cart = Cart::firstOrCreate(['user_id' => auth()->id()]);
+            $cart = Cart::firstOrCreate(['user_id' => $addItemToCart->userId]);
             $item = $cart->items()->lockForUpdate()->where('menu_id', $addItemToCart->menu_id)->first();
             if ($item) {
                 $item->quantity = $item->quantity + $addItemToCart->quantity;
