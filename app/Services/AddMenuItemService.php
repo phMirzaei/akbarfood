@@ -13,12 +13,11 @@ class AddMenuItemService
 {
     public function execute(AddMenuItem $addMenuItem)
     {
-        $restaurant = Restaurant::findOrFail($addMenuItem->restaurantId);
-        if (! $restaurant->isApproved()) {
-            throw new RestaurantNotApprovedException;
-        }
-        DB::transaction(function () use ($addMenuItem, $restaurant) {
-
+        DB::transaction(function () use ($addMenuItem) {
+            $restaurant = Restaurant::findOrFail($addMenuItem->restaurantId);
+            if (! $restaurant->isApproved()) {
+                throw new RestaurantNotApprovedException;
+            }
             DB::afterRollBack(fn () => Storage::disk('public')->delete($addMenuItem->imagePath));
 
             Menu::create([
