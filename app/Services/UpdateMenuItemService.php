@@ -14,15 +14,29 @@ class UpdateMenuItemService
 {
     public function execute(UpdateMenuItem $updateMenuItem): void
     {
-        $restaurant = Restaurant::findOrFail($updateMenuItem->restaurantId);
-        $menuItem = Menu::findOrFail($updateMenuItem->menuId);
-        if ($menuItem->restaurant_id != $restaurant->id) {
-            throw new MenuItemNotInRestaurantException;
-        }
-        if (! $restaurant->isApproved()) {
-            throw new RestaurantNotApprovedException;
-        }
-        DB::transaction(function () use ($updateMenuItem, $menuItem) {
+        DB::transaction(function () use ($updateMenuItem) {
+
+            if ($updateMenuItem->imagePath !== null) {
+                DB::afterRollBack(
+                    fn () => Storage::disk('public')->delete($updateMenuItem->imagePath)
+                );
+            }
+
+            $restaurant = Restaurant::findOrFail(
+                $updateMenuItem->restaurantId
+            );
+
+            $menuItem = Menu::findOrFail(
+                $updateMenuItem->menuId
+            );
+
+            if ($menuItem->restaurant_id != $restaurant->id) {
+                throw new MenuItemNotInRestaurantException;
+            }
+
+            if (! $restaurant->isApproved()) {
+                throw new RestaurantNotApprovedException;
+            }
 
             $updateData = [
                 'name' => $updateMenuItem->name,
@@ -34,8 +48,6 @@ class UpdateMenuItemService
 
             if ($updateMenuItem->imagePath !== null) {
                 $oldImage = $menuItem->image;
-
-                DB::afterRollBack(fn () => Storage::disk('public')->delete($updateMenuItem->imagePath));
 
                 $updateData['image'] = $updateMenuItem->imagePath;
 
