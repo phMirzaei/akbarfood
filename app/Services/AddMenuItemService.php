@@ -19,7 +19,7 @@ class AddMenuItemService
         }
         DB::transaction(function () use ($addMenuItem, $restaurant) {
 
-            $path = $addMenuItem->image->store('itemsPic', 'public');
+            $path = $addMenuItem->imagePath->store('itemsPic', 'public');
 
             DB::afterRollBack(fn () => Storage::disk('public')->delete($path));
 

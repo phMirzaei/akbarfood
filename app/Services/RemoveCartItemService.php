@@ -11,11 +11,11 @@ class RemoveCartItemService
 {
     public function execute(RemoveCartItem $removeCartItem): void
     {
-        $cart = Cart::where('user_id', $removeCartItem->userId);
+        $cart = Cart::where('user_id', $removeCartItem->userId)->first();
         if (! $cart) {
             throw new CartItemNotFoundException;
         }
-        $cartItem = CartItem::where('user_id', $removeCartItem->userId)
+        $cartItem = CartItem::where('id', $removeCartItem->cartItemId)
             ->where('cart_id', $cart->id)
             ->first();
         if (! $cartItem) {

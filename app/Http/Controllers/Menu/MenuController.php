@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Menu;
 
 use App\DTOs\AddMenuItem;
+use App\DTOs\RemoveMenuItem;
 use App\DTOs\UpdateMenuItem;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Menu\MenuItemRequest;
@@ -23,7 +24,7 @@ class MenuController extends Controller
             name: $request->validated('name'),
             description: $request->validated('description'),
             category: $request->validated('category'),
-            image: $request->validated('image'),
+            imagePath: $request->validated('image'),
             is_available: $request->validated('is_available'),
             price: $request->validated('price'),
         );
@@ -44,13 +45,14 @@ class MenuController extends Controller
 
     public function updateMenuItems(UpdateMenuItemRequest $request, UpdateMenuItemService $updateMenuItemService, Restaurant $restaurant, Menu $menuItem): JsonResponse
     {
+        $imagePath=$request->hasFile('image') ? $request->file('image')->store('itemPic', 'public') : null;
         $updateMenuItem = new UpdateMenuItem(
             restaurantId: $restaurant->id,
             menuId: $menuItem->id,
             name: $request->validated('name'),
             description: $request->validated('description'),
             category: $request->validated('category'),
-            image: $request->validated('image'),
+            imagePath: $imagePath,
             is_available: $request->validated('is_available'),
             price: $request->validated('price'),
         );
@@ -63,7 +65,11 @@ class MenuController extends Controller
 
     public function removeMenuItems(Restaurant $restaurant, Menu $menuItem, RemoveMenuItemService $removeMenuItemService): JsonResponse
     {
-        $removeMenuItemService->execute($menuItem, $restaurant);
+        $removeMenuItem=new RemoveMenuItem(
+            menuId: $menuItem->id,
+            restaurantId: $restaurant->id
+        );
+        $removeMenuItemService->execute($removeMenuItem);
 
         return response()->json([
             'message' => 'آیتم با موفقیت حذف شد.',

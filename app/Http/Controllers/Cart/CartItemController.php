@@ -35,6 +35,8 @@ class CartItemController extends Controller
     {
         $UpdatedCartItem = new UpdateCartItem(
             quantity: $request->validated('quantity'),
+            cartItemId: $cartItem->id,
+            userId: auth()->id()
         );
         $updateCartItemService->execute($UpdatedCartItem, $cartItem);
 

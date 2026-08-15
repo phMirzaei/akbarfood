@@ -11,7 +11,7 @@ final readonly class AddMenuItem
         public string $name,
         public string $description,
         public string $category,
-        public UploadedFile $image,
+        public ?string $imagePath,
         public bool $is_available,
         public int $price,
     ) {}

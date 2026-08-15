@@ -10,7 +10,7 @@ final readonly class UpdateMenuItem
         public string $name,
         public string $description,
         public string $category,
-        public ?string $image,
+        public ?string $imagePath,
         public bool $is_available,
         public int $price
     ) {}

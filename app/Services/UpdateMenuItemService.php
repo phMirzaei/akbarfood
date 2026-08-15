@@ -32,14 +32,12 @@ class UpdateMenuItemService
                 'price' => $updateMenuItem->price,
             ];
 
-            if ($updateMenuItem->image !== null) {
+            if ($updateMenuItem->imagePath !== null) {
                 $oldImage = $menuItem->image;
 
-                $path = $updateMenuItem->image->store('itemsPic', 'public');
+                DB::afterRollBack(fn () => Storage::disk('public')->delete($updateMenuItem->imagePath));
 
-                DB::afterRollBack(fn () => Storage::disk('public')->delete($path));
-
-                $updateData['image'] = $path;
+                $updateData['image'] = $updateMenuItem->imagePath;
 
                 DB::afterCommit(function () use ($oldImage) {
                     if ($oldImage) {
