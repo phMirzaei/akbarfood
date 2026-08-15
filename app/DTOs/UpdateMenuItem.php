@@ -5,6 +5,7 @@ namespace App\DTOs;
 final readonly class UpdateMenuItem
 {
     public function __construct(
+        public int $actorId,
         public int $restaurantId,
         public int $menuId,
         public string $name,

@@ -21,6 +21,7 @@ class MenuController extends Controller
     {
         $imagePath = $request->hasFile('image') ? $request->file('image')->store('itemsPic', 'public') : null;
         $menuItem = new AddMenuItem(
+            actorId: auth()->id(),
             restaurantId: $restaurant->id,
             name: $request->validated('name'),
             description: $request->validated('description'),
@@ -48,6 +49,7 @@ class MenuController extends Controller
     {
         $imagePath = $request->hasFile('image') ? $request->file('image')->store('itemPic', 'public') : null;
         $updateMenuItem = new UpdateMenuItem(
+            actorId: auth()->id(),
             restaurantId: $restaurant->id,
             menuId: $menuItem->id,
             name: $request->validated('name'),
@@ -67,6 +69,7 @@ class MenuController extends Controller
     public function removeMenuItems(Restaurant $restaurant, Menu $menuItem, RemoveMenuItemService $removeMenuItemService): JsonResponse
     {
         $removeMenuItem = new RemoveMenuItem(
+            actorId: auth()->id(),
             menuId: $menuItem->id,
             restaurantId: $restaurant->id
         );

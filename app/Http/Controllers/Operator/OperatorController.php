@@ -13,7 +13,10 @@ class OperatorController extends Controller
     public function promoteOperator(Request $request, PromoteToOperatorService $promoteToOperatorService, $userId): JsonResponse
     {
         $promoteToOperatorService->execute(
-            new PromoteToOperator($userId)
+            new PromoteToOperator(
+                userId: $userId,
+                actorId: auth()->id(),
+            )
         );
 
         return response()->json([

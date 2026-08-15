@@ -6,8 +6,10 @@ use App\DTOs\AddMenuItem;
 use App\Exceptions\RestaurantNotApprovedException;
 use App\Models\Menu\Menu;
 use App\Models\Restaurant\Restaurant;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\UnauthorizedException;
 
 class AddMenuItemService
 {
@@ -20,7 +22,10 @@ class AddMenuItemService
                     fn () => Storage::disk('public')->delete($addMenuItem->imagePath)
                 );
             }
-
+            $owner = User::findOrFail($addMenuItem->actorId);
+            if (! $owner->isOwner()) {
+                throw new UnauthorizedException;
+            }
             $restaurant = Restaurant::findOrFail($addMenuItem->restaurantId);
 
             if (! $restaurant->isApproved()) {

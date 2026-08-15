@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\DTOs\RejectRestaurant;
 use App\Models\Restaurant\Restaurant;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\UnauthorizedException;
 
 class RejectRestaurantService
 {
@@ -14,6 +16,10 @@ class RejectRestaurantService
 
     public function execute(RejectRestaurant $rejectRestaurant)
     {
+        $operator = User::findOrFail($rejectRestaurant->actorId);
+        if (! $operator->isOperator()) {
+            throw new UnauthorizedException;
+        }
         $restaurant = Restaurant::findOrFail($rejectRestaurant->restaurantId);
         if (! $restaurant->isPending()) {
             throw new \DomainException('این درخواست قبلاً بررسی شده است.');

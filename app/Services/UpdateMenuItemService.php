@@ -7,8 +7,10 @@ use App\Exceptions\MenuItemNotInRestaurantException;
 use App\Exceptions\RestaurantNotApprovedException;
 use App\Models\Menu\Menu;
 use App\Models\Restaurant\Restaurant;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\UnauthorizedException;
 
 class UpdateMenuItemService
 {
@@ -21,7 +23,10 @@ class UpdateMenuItemService
                     fn () => Storage::disk('public')->delete($updateMenuItem->imagePath)
                 );
             }
-
+            $owner = User::findOrFail($updateMenuItem->actorId);
+            if (! $owner->isOwner()) {
+                throw new UnauthorizedException;
+            }
             $restaurant = Restaurant::findOrFail(
                 $updateMenuItem->restaurantId
             );
