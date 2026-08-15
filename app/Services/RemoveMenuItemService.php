@@ -15,7 +15,9 @@ class RemoveMenuItemService
     public function execute(RemoveMenuItem $removeMenuItem): void
     {
         $owner = User::findOrFail($removeMenuItem->actorId);
-        if (! $owner->isOwner()) {
+        if (! $owner->restaurants()
+            ->where('restaurants.id', $removeMenuItem->restaurantId)
+            ->wherePivot('role', 'owner')->exists()) {
             throw new UnauthorizedException;
         }
         $menuItem = Menu::findOrFail($removeMenuItem->menuId);

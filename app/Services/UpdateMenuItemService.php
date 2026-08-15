@@ -24,7 +24,9 @@ class UpdateMenuItemService
                 );
             }
             $owner = User::findOrFail($updateMenuItem->actorId);
-            if (! $owner->isOwner()) {
+            if (! $owner->restaurants()
+                ->where('restaurants.id', $updateMenuItem->restaurantId)
+                ->wherePivot('role', 'owner')->exists()) {
                 throw new UnauthorizedException;
             }
             $restaurant = Restaurant::findOrFail(

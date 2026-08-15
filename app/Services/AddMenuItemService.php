@@ -23,7 +23,9 @@ class AddMenuItemService
                 );
             }
             $owner = User::findOrFail($addMenuItem->actorId);
-            if (! $owner->isOwner()) {
+            if (! $owner->restaurants()
+                ->where('restaurants.id', $addMenuItem->restaurantId)
+                ->wherePivot('role', 'owner')->exists()) {
                 throw new UnauthorizedException;
             }
             $restaurant = Restaurant::findOrFail($addMenuItem->restaurantId);
