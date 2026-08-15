@@ -110,6 +110,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(
             fn (UnauthorizedException $e) => response()->json([
                 'message' => 'دسترسی غیر مجاز',
-            ], 401)
+            ], 403)
         );
     })->create();
