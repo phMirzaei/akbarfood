@@ -6,21 +6,23 @@ use App\DTOs\CancelOrder;
 use App\Exceptions\OrderAlreadyCancelledException;
 use App\Exceptions\OrderAlreadyPaidException;
 use App\Exceptions\UnauthorizedOrderActionException;
+use App\Models\Order\Order;
 
 class CancelOrderService
 {
     public function execute(CancelOrder $cancelOrder)
     {
-        if ($cancelOrder->order->user_id !== $cancelOrder->userId) {
+        $order = Order::findOrFail($cancelOrder->orderId);
+        if ($order->user_id !== $cancelOrder->userId) {
             throw new UnauthorizedOrderActionException;
         }
-        if ($cancelOrder->order->isPaid()) {
+        if ($order->isPaid()) {
             throw new OrderAlreadyPaidException;
         }
-        if ($cancelOrder->order->isCancelled()) {
+        if ($order->isCancelled()) {
             throw new OrderAlreadyCancelledException;
         }
-        $cancelOrder->order->cancel();
-        $cancelOrder->order->save();
+        $order->cancel();
+        $order->save();
     }
 }

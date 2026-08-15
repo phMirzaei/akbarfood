@@ -11,22 +11,27 @@ use Illuminate\Support\Facades\Storage;
 
 class AddMenuItemService
 {
-    public function execute(AddMenuItem $addMenuItem, Restaurant $restaurant)
+    public function execute(AddMenuItem $addMenuItem)
     {
-        if (! $restaurant->isApproved()) {
-            throw new RestaurantNotApprovedException;
-        }
-        DB::transaction(function () use ($addMenuItem, $restaurant) {
+        DB::transaction(function () use ($addMenuItem) {
 
-            $path = $addMenuItem->image->store('itemsPic', 'public');
+            if ($addMenuItem->imagePath !== null) {
+                DB::afterRollBack(
+                    fn () => Storage::disk('public')->delete($addMenuItem->imagePath)
+                );
+            }
 
-            DB::afterRollBack(fn () => Storage::disk('public')->delete($path));
+            $restaurant = Restaurant::findOrFail($addMenuItem->restaurantId);
+
+            if (! $restaurant->isApproved()) {
+                throw new RestaurantNotApprovedException;
+            }
 
             Menu::create([
                 'name' => $addMenuItem->name,
                 'description' => $addMenuItem->description,
                 'category' => $addMenuItem->category,
-                'image' => $path,
+                'image' => $addMenuItem->imagePath,
                 'is_available' => $addMenuItem->is_available,
                 'price' => $addMenuItem->price,
                 'restaurant_id' => $restaurant->id,

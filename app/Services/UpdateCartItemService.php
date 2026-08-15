@@ -9,10 +9,14 @@ use App\Models\Cart\CartItem;
 
 class UpdateCartItemService
 {
-    public function execute(UpdateCartItem $updateCartItem, CartItem $cartItem)
+    public function execute(UpdateCartItem $updateCartItem)
     {
-        $cart = Cart::where('user_id', auth()->id())->firstOrFail();
-        if ($cartItem->cart_id !== $cart->id) {
+        $cart = Cart::where('user_id', $updateCartItem->userId)
+            ->firstOrFail();
+        $cartItem = CartItem::where('id', $updateCartItem->cartItemId)
+            ->where('cart_id', $cart->id)
+            ->first();
+        if (! $cartItem) {
             throw new CartItemNotFoundException;
         }
         $cartItem->update([

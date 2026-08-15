@@ -2,15 +2,16 @@
 
 namespace App\DTOs;
 
-class RegisterRestaurant
+final readonly class RegisterRestaurant
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $permit_scan,
-        public readonly string $landline_number,
-        public readonly string $city,
-        public readonly string $street,
-        public readonly string $alley,
-        public readonly string $vendor_type
+        public int $ownerId,
+        public string $name,
+        public string $permit_scan,
+        public string $landline_number,
+        public string $city,
+        public string $street,
+        public string $alley,
+        public string $vendor_type
     ) {}
 }

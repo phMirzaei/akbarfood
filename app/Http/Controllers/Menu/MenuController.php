@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Menu;
 
 use App\DTOs\AddMenuItem;
+use App\DTOs\RemoveMenuItem;
 use App\DTOs\UpdateMenuItem;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Menu\MenuItemRequest;
@@ -18,15 +19,17 @@ class MenuController extends Controller
 {
     public function addMenuItems(MenuItemRequest $request, AddMenuItemService $menuService, Restaurant $restaurant): JsonResponse
     {
+        $imagePath = $request->hasFile('image') ? $request->file('image')->store('itemsPic', 'public') : null;
         $menuItem = new AddMenuItem(
+            restaurantId: $restaurant->id,
             name: $request->validated('name'),
             description: $request->validated('description'),
             category: $request->validated('category'),
-            image: $request->validated('image'),
+            imagePath: $imagePath,
             is_available: $request->validated('is_available'),
             price: $request->validated('price'),
         );
-        $menuService->execute($menuItem, $restaurant);
+        $menuService->execute($menuItem);
 
         return response()->json([
             'message' => 'آیتم با موفقیت اضافه شد .',
@@ -43,15 +46,18 @@ class MenuController extends Controller
 
     public function updateMenuItems(UpdateMenuItemRequest $request, UpdateMenuItemService $updateMenuItemService, Restaurant $restaurant, Menu $menuItem): JsonResponse
     {
+        $imagePath = $request->hasFile('image') ? $request->file('image')->store('itemPic', 'public') : null;
         $updateMenuItem = new UpdateMenuItem(
+            restaurantId: $restaurant->id,
+            menuId: $menuItem->id,
             name: $request->validated('name'),
             description: $request->validated('description'),
             category: $request->validated('category'),
-            image: $request->validated('image'),
+            imagePath: $imagePath,
             is_available: $request->validated('is_available'),
             price: $request->validated('price'),
         );
-        $updateMenuItemService->execute($updateMenuItem, $restaurant, $menuItem);
+        $updateMenuItemService->execute($updateMenuItem);
 
         return response()->json([
             'message' => 'آیتم با موفقیت آپدیت شد.',
@@ -60,7 +66,11 @@ class MenuController extends Controller
 
     public function removeMenuItems(Restaurant $restaurant, Menu $menuItem, RemoveMenuItemService $removeMenuItemService): JsonResponse
     {
-        $removeMenuItemService->execute($menuItem, $restaurant);
+        $removeMenuItem = new RemoveMenuItem(
+            menuId: $menuItem->id,
+            restaurantId: $restaurant->id
+        );
+        $removeMenuItemService->execute($removeMenuItem);
 
         return response()->json([
             'message' => 'آیتم با موفقیت حذف شد.',

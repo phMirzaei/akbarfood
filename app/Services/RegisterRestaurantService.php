@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Storage;
 
 class RegisterRestaurantService
 {
-    public function execute(RegisterRestaurant $registerRestaurant, int $ownerId)
+    public function execute(RegisterRestaurant $registerRestaurant)
     {
-        DB::transaction(function () use ($registerRestaurant, $ownerId) {
+        DB::transaction(function () use ($registerRestaurant) {
             DB::afterRollBack(fn () => Storage::disk('local')->delete($registerRestaurant->permit_scan));
             $restaurant = Restaurant::create([
                 'name' => $registerRestaurant->name,
@@ -24,7 +24,7 @@ class RegisterRestaurantService
                 'vendor_type' => $registerRestaurant->vendor_type,
                 'status' => 'pending',
             ]);
-            $restaurant->users()->attach($ownerId, [
+            $restaurant->users()->attach($registerRestaurant->ownerId, [
                 'role' => UserRole::Owner->value,
             ]);
         });

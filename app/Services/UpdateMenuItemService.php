@@ -12,15 +12,31 @@ use Illuminate\Support\Facades\Storage;
 
 class UpdateMenuItemService
 {
-    public function execute(UpdateMenuItem $updateMenuItem, Restaurant $restaurant, Menu $menuItem)
+    public function execute(UpdateMenuItem $updateMenuItem): void
     {
-        if ($menuItem->restaurant_id != $restaurant->id) {
-            throw new MenuItemNotInRestaurantException;
-        }
-        if (! $restaurant->isApproved()) {
-            throw new RestaurantNotApprovedException;
-        }
-        DB::transaction(function () use ($updateMenuItem, $menuItem) {
+        DB::transaction(function () use ($updateMenuItem) {
+
+            if ($updateMenuItem->imagePath !== null) {
+                DB::afterRollBack(
+                    fn () => Storage::disk('public')->delete($updateMenuItem->imagePath)
+                );
+            }
+
+            $restaurant = Restaurant::findOrFail(
+                $updateMenuItem->restaurantId
+            );
+
+            $menuItem = Menu::findOrFail(
+                $updateMenuItem->menuId
+            );
+
+            if ($menuItem->restaurant_id != $restaurant->id) {
+                throw new MenuItemNotInRestaurantException;
+            }
+
+            if (! $restaurant->isApproved()) {
+                throw new RestaurantNotApprovedException;
+            }
 
             $updateData = [
                 'name' => $updateMenuItem->name,
@@ -30,14 +46,10 @@ class UpdateMenuItemService
                 'price' => $updateMenuItem->price,
             ];
 
-            if ($updateMenuItem->image !== null) {
+            if ($updateMenuItem->imagePath !== null) {
                 $oldImage = $menuItem->image;
 
-                $path = $updateMenuItem->image->store('itemsPic', 'public');
-
-                DB::afterRollBack(fn () => Storage::disk('public')->delete($path));
-
-                $updateData['image'] = $path;
+                $updateData['image'] = $updateMenuItem->imagePath;
 
                 DB::afterCommit(function () use ($oldImage) {
                     if ($oldImage) {

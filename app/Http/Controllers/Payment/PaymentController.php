@@ -17,7 +17,7 @@ class PaymentController extends Controller
     {
         $requestPayment = new RequestPayment(
             userId: auth()->id(),
-            order: $order
+            orderId: $order->id
         );
         $requestPaymentService->execute($requestPayment);
 
@@ -30,7 +30,7 @@ class PaymentController extends Controller
     {
         $verifyPayment = new VerifyPayment(
             userId: auth()->id(),
-            payment: $payment
+            paymentId: $payment->id
         );
         $payment = $verifyPaymentService->execute($verifyPayment);
 

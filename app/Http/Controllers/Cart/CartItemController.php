@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Cart;
 
 use App\DTOs\AddItemToCart;
+use App\DTOs\RemoveCartItem;
 use App\DTOs\UpdateCartItem;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cart\AddItemToCartRequest;
@@ -19,6 +20,7 @@ class CartItemController extends Controller
     {
 
         $cartItem = new AddItemToCart(
+            userId: auth()->id(),
             menu_id: $request->validated('menu_id'),
             quantity: $request->validated('quantity'),
         );
@@ -33,8 +35,10 @@ class CartItemController extends Controller
     {
         $UpdatedCartItem = new UpdateCartItem(
             quantity: $request->validated('quantity'),
+            cartItemId: $cartItem->id,
+            userId: auth()->id()
         );
-        $updateCartItemService->execute($UpdatedCartItem, $cartItem);
+        $updateCartItemService->execute($UpdatedCartItem);
 
         return response()->json([
             'message' => 'آیتم ویرایش شد.',
@@ -43,7 +47,11 @@ class CartItemController extends Controller
 
     public function removeItemFromCart(RemoveCartItemService $removeCartItemService, CartItem $cartItem): JsonResponse
     {
-        $removeCartItemService->execute($cartItem);
+        $removeCartItem = new RemoveCartItem(
+            cartItemId: $cartItem->id,
+            userId: auth()->id(),
+        );
+        $removeCartItemService->execute($removeCartItem);
 
         return response()->json([
             'message' => 'محصول از سبد خرید شما حذف شد.',

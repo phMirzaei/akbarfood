@@ -2,11 +2,11 @@
 
 namespace App\DTOs;
 
-final readonly class UpdateCartItem
+final readonly class RemoveCartItem
 {
     public function __construct(
-        public int $quantity,
-        public int $cartItemId,
         public int $userId,
+        public int $cartItemId
     ) {}
+
 }
