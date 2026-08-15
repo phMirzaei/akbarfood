@@ -13,10 +13,10 @@ class UpdateCartItemService
     {
         $cart = Cart::where('user_id', $updateCartItem->userId)
             ->firstOrFail();
-        $cartItem=CartItem::where('id',$updateCartItem->cartItemId)
-            ->where('cart_id',$cart->id)
+        $cartItem = CartItem::where('id', $updateCartItem->cartItemId)
+            ->where('cart_id', $cart->id)
             ->first();
-        if (!$cartItem) {
+        if (! $cartItem) {
             throw new CartItemNotFoundException;
         }
         $cartItem->update([

@@ -2,8 +2,6 @@
 
 namespace App\DTOs;
 
-use Illuminate\Http\UploadedFile;
-
 final readonly class AddMenuItem
 {
     public function __construct(

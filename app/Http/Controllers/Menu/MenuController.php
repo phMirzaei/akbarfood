@@ -19,7 +19,7 @@ class MenuController extends Controller
 {
     public function addMenuItems(MenuItemRequest $request, AddMenuItemService $menuService, Restaurant $restaurant): JsonResponse
     {
-        $imagePath=$request->hasFile('imagePath') ? $request->file('imagePath')->store('itemsPic', 'public') : null;
+        $imagePath = $request->hasFile('image') ? $request->file('image')->store('itemsPic', 'public') : null;
         $menuItem = new AddMenuItem(
             restaurantId: $restaurant->id,
             name: $request->validated('name'),
@@ -46,7 +46,7 @@ class MenuController extends Controller
 
     public function updateMenuItems(UpdateMenuItemRequest $request, UpdateMenuItemService $updateMenuItemService, Restaurant $restaurant, Menu $menuItem): JsonResponse
     {
-        $imagePath=$request->hasFile('image') ? $request->file('image')->store('itemPic', 'public') : null;
+        $imagePath = $request->hasFile('image') ? $request->file('image')->store('itemPic', 'public') : null;
         $updateMenuItem = new UpdateMenuItem(
             restaurantId: $restaurant->id,
             menuId: $menuItem->id,
@@ -66,7 +66,7 @@ class MenuController extends Controller
 
     public function removeMenuItems(Restaurant $restaurant, Menu $menuItem, RemoveMenuItemService $removeMenuItemService): JsonResponse
     {
-        $removeMenuItem=new RemoveMenuItem(
+        $removeMenuItem = new RemoveMenuItem(
             menuId: $menuItem->id,
             restaurantId: $restaurant->id
         );
