@@ -3,9 +3,12 @@
 namespace App\Services;
 
 use App\DTOs\AddMenuItem;
+use App\Enums\UserRole;
 use App\Exceptions\RestaurantNotApprovedException;
+use App\Exceptions\UnauthorizedException;
 use App\Models\Menu\Menu;
 use App\Models\Restaurant\Restaurant;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -20,7 +23,12 @@ class AddMenuItemService
                     fn () => Storage::disk('public')->delete($addMenuItem->imagePath)
                 );
             }
-
+            $owner = User::findOrFail($addMenuItem->actorId);
+            if (! $owner->restaurants()
+                ->where('restaurants.id', $addMenuItem->restaurantId)
+                ->wherePivot('role', UserRole::Owner->value)->exists()) {
+                throw new UnauthorizedException;
+            }
             $restaurant = Restaurant::findOrFail($addMenuItem->restaurantId);
 
             if (! $restaurant->isApproved()) {

@@ -22,7 +22,10 @@ class RestaurantApprovalController extends Controller
     public function approveRestaurant(Restaurant $restaurant, ApproveRestaurantService $approveRestaurantService): JsonResponse
     {
         $approveRestaurantService->execute(
-            new ApproveRestaurant($restaurant->id),
+            new ApproveRestaurant(
+                restaurantId: $restaurant->id,
+                actorId: auth()->id()
+            ),
         );
 
         return response()->json(['message' => 'تایید شد.'], 200);
@@ -31,7 +34,10 @@ class RestaurantApprovalController extends Controller
     public function rejectRestaurant(Restaurant $restaurant, RejectRestaurantService $rejectRestaurantService): JsonResponse
     {
         $rejectRestaurantService->execute(
-            new RejectRestaurant($restaurant->id)
+            new RejectRestaurant(
+                restaurantId: $restaurant->id,
+                actorId: auth()->id()
+            )
         );
 
         return response()->json(['message' => ' رد شد.'], 200);
