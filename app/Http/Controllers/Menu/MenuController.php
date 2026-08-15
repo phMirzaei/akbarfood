@@ -19,12 +19,13 @@ class MenuController extends Controller
 {
     public function addMenuItems(MenuItemRequest $request, AddMenuItemService $menuService, Restaurant $restaurant): JsonResponse
     {
+        $imagePath=$request->hasFile('imagePath') ? $request->file('imagePath')->store('itemsPic', 'public') : null;
         $menuItem = new AddMenuItem(
             restaurantId: $restaurant->id,
             name: $request->validated('name'),
             description: $request->validated('description'),
             category: $request->validated('category'),
-            imagePath: $request->validated('image'),
+            imagePath: $imagePath,
             is_available: $request->validated('is_available'),
             price: $request->validated('price'),
         );
