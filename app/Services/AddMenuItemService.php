@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\DTOs\AddMenuItem;
+use App\Enums\UserRole;
 use App\Exceptions\RestaurantNotApprovedException;
 use App\Exceptions\UnauthorizedException;
 use App\Models\Menu\Menu;
@@ -25,7 +26,7 @@ class AddMenuItemService
             $owner = User::findOrFail($addMenuItem->actorId);
             if (! $owner->restaurants()
                 ->where('restaurants.id', $addMenuItem->restaurantId)
-                ->wherePivot('role', 'owner')->exists()) {
+                ->wherePivot('role', UserRole::Owner->value)->exists()) {
                 throw new UnauthorizedException;
             }
             $restaurant = Restaurant::findOrFail($addMenuItem->restaurantId);

@@ -17,7 +17,7 @@ class RejectRestaurantService
     public function execute(RejectRestaurant $rejectRestaurant)
     {
         $operator = User::findOrFail($rejectRestaurant->actorId);
-        if (! $operator->isOperator()) {
+        if (! $operator->isOperator() && ! $operator->isAdmin()) {
             throw new UnauthorizedException;
         }
         $restaurant = Restaurant::findOrFail($rejectRestaurant->restaurantId);
