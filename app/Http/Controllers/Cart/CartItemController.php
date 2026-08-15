@@ -38,7 +38,7 @@ class CartItemController extends Controller
             cartItemId: $cartItem->id,
             userId: auth()->id()
         );
-        $updateCartItemService->execute($UpdatedCartItem, $cartItem);
+        $updateCartItemService->execute($UpdatedCartItem);
 
         return response()->json([
             'message' => 'آیتم ویرایش شد.',
