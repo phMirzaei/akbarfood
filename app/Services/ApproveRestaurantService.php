@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\DTOs\ApproveRestaurant;
+use App\Exceptions\UnauthorizedException;
 use App\Models\Restaurant\Restaurant;
 use App\Models\User;
-use Illuminate\Validation\UnauthorizedException;
 
 class ApproveRestaurantService
 {

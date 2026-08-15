@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\DTOs\RejectRestaurant;
+use App\Exceptions\UnauthorizedException;
 use App\Models\Restaurant\Restaurant;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\UnauthorizedException;
 
 class RejectRestaurantService
 {

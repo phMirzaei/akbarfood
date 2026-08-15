@@ -5,12 +5,12 @@ namespace App\Services;
 use App\DTOs\UpdateMenuItem;
 use App\Exceptions\MenuItemNotInRestaurantException;
 use App\Exceptions\RestaurantNotApprovedException;
+use App\Exceptions\UnauthorizedException;
 use App\Models\Menu\Menu;
 use App\Models\Restaurant\Restaurant;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\UnauthorizedException;
 
 class UpdateMenuItemService
 {

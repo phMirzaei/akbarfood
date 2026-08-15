@@ -66,18 +66,18 @@ class User extends Authenticatable implements JWTSubject
         $this->role = UserRole::Operator;
     }
 
-    public function isAdmin(): void
+    public function isAdmin(): bool
     {
-        $this->role = UserRole::Admin;
+        return $this->role === UserRole::Admin;
     }
 
-    public function isOperator(): void
+    public function isOperator(): bool
     {
-        $this->role = UserRole::Operator;
+        return $this->role === UserRole::Operator;
     }
 
-    public function isOwner(): void
+    public function isOwner(): bool
     {
-        $this->role = UserRole::Owner;
+        return $this->role === UserRole::Owner;
     }
 }

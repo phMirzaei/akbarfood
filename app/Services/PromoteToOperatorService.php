@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\DTOs\PromoteToOperator;
+use App\Exceptions\UnauthorizedException;
 use App\Models\User;
-use Illuminate\Validation\UnauthorizedException;
 
 class PromoteToOperatorService
 {

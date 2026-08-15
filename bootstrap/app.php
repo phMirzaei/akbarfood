@@ -13,6 +13,7 @@ use App\Exceptions\OtpTooManyAttemptsException;
 use App\Exceptions\OtpTooManyRequestException;
 use App\Exceptions\PaymentFailedException;
 use App\Exceptions\RestaurantNotApprovedException;
+use App\Exceptions\UnauthorizedException;
 use App\Exceptions\UnauthorizedOrderActionException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\OperatorMiddleware;
@@ -105,5 +106,10 @@ return Application::configure(basePath: dirname(__DIR__))
             fn (RestaurantNotApprovedException $e) => response()->json([
                 'message' => 'رستوران هنوز تایید نشده است.',
             ], 403)
+        );
+        $exceptions->render(
+            fn (UnauthorizedException $e) => response()->json([
+                'message' => 'دسترسی غیر مجاز',
+            ], 401)
         );
     })->create();
