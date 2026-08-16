@@ -28,13 +28,98 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.ANTHROPIC_API_KEY }}
           track_progress: 'true'
+          # The tracking comment doubles as the status comment; sticky makes it
+          # update in place instead of adding a new comment on every push.
+          use_sticky_comment: 'true'
           claude_args: |
             --model claude-sonnet-4-6
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh api:*)"
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh api:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Grep,Read"
           prompt: |
             You are reviewing a pull request on themiladmirza/akbarfood, a Laravel 12 PHP project.
             The author is an early-career engineer whose first language is Persian (Farsi).
             Reviews are a teaching moment as much as a quality gate.
+
+            # Decide your mode FIRST — before reading any code
+
+            This workflow runs on every push. Most runs are NOT reviews. Decide which
+            mode you are in before you do anything else.
+
+            List the PR's existing comments, both kinds, and look for ones authored by
+            `claude`:
+
+            ```
+            gh api repos/{owner}/{repo}/issues/{pr}/comments --jq '.[] | {user: .user.login, body: .body}'
+            gh api repos/{owner}/{repo}/pulls/{pr}/comments --jq '.[] | {id, path, line, user: .user.login, body: .body}'
+            ```
+
+            **Mode A — initial review.** You have never commented on this PR. Review the
+            full PR diff. This is the *only* run that reviews broadly.
+
+            **Mode B — verification.** You have commented before. **You are not reviewing
+            the PR again.** You answer exactly two questions:
+
+            1. Is each finding you raised earlier actually fixed?
+            2. Did those fixes break anything new?
+
+            In Mode B, never re-review code that has not changed since your last run, and
+            never restate a finding whose status has not changed. Re-reporting settled
+            findings is the single worst thing you can do here — the author reads it as
+            noise and stops reading you at all. If nothing relevant changed, say exactly
+            that in one line and stop.
+
+            ## Mode B — finding the commit you last reviewed
+
+            Do **not** try to read this out of your own status comment — that comment is
+            reset to a placeholder at the start of every run, so anything you wrote there
+            last time is already gone.
+
+            Use GitHub's own metadata instead. Every inline comment records the commit it
+            was posted against, and that never changes:
+
+            ```
+            gh api repos/{owner}/{repo}/pulls/{pr}/comments \
+              --jq 'map(select(.user.login | startswith("claude"))) | sort_by(.created_at) | last | .original_commit_id'
+            ```
+
+            That SHA is where you last looked. If it comes back empty — your previous run
+            found nothing, so there are no inline comments — fall back to the newest commit
+            that is older than your last PR-level comment, and say in the status comment
+            that your scope is approximate.
+
+            ## Mode B — what you are allowed to look at
+
+            With that SHA in hand, your scope is:
+
+            - `git diff <SHA>..HEAD` — everything the author changed since you last looked.
+            - The exact lines your earlier findings were anchored to.
+            - **Direct callers** of any function, method or class whose signature or
+              behaviour changed in that diff. Find them with grep.
+
+            That is the entire boundary. "Did the fix break anything?" means *anything
+            inside that boundary* — not anything in the codebase. Do not widen it, and do
+            not re-scan files the author did not touch. An unbounded regression hunt turns
+            every push back into a full review, which is exactly what this design exists to
+            prevent.
+
+            ## Mode B — where your output goes
+
+            - **Reply on the original inline thread** for each prior finding you can now
+              report on:
+
+              ```
+              gh api --method POST repos/{owner}/{repo}/pulls/{pr}/comments/{comment_id}/replies -f body='...'
+              ```
+
+              One or two sentences. "✅ Fixed — `LocalPermitStorage` now returns the path."
+              or "⚠️ Still wrong — the return value is used, but the empty-string case is
+              not handled." Nothing more. The author already has the explanation above it.
+            - **Post a new inline comment only for a genuine regression** — something the
+              fix itself broke. Use the full comment template for those, because it is new
+              information.
+            - **Update the status comment** (below). Always exactly one.
+
+            A ✅ from you means "I checked and it looks right," not "this is proven
+            correct." Do not phrase it as a guarantee.
 
             # Style
 
@@ -59,56 +144,58 @@ jobs:
             - Only post **required** findings (bugs, security issues, regressions, dead code,
               files that shouldn't be committed). **Skip style/formatting nits aggressively** —
               we keep comment volume low so signal-to-noise stays high.
-            - Before posting, read existing PR review comments. **Do not repeat a finding that
-              already exists.**
-            - **Always update the sticky summary comment** (described below) — even when the PR
-              is clean. The sticky comment is your "status board."
+            - Never repeat a finding that already exists on the PR, in either mode.
 
-            # The sticky summary comment
+            # The status comment
 
-            On every run, post or update a single PR-level summary comment (the action's
-            `use_sticky_comment` keeps this as one comment that updates in place). Its content:
+            There is exactly **one** PR-level comment from you, and it updates in place on
+            every run — `use_sticky_comment` is enabled, so the tracking comment you are
+            given is reused. Never create a second PR-level comment; edit that one. This is
+            what keeps a long PR from filling up with a comment per push.
 
-            **First-pass review (no prior Claude comments on this PR):**
+            It is a status board, not a log. It shows where the PR stands *now*. Do not
+            append run-by-run history to it.
+
+            **Mode A — initial review:**
 
             ```
             ## 🤖 Claude review
 
-            Found N issue(s). See inline comments below for details and suggested fixes.
+            Found N issue(s). See the inline comments for details and suggested fixes.
 
             (Or, if clean:)
             Looks good — no required findings. Nice work!
             ```
 
-            **Follow-up review (you've commented on this PR before):**
+            **Mode B — verification.** Keep this short. Only list findings whose status
+            **changed since your last status comment**. Collapse everything already settled
+            into a single count.
 
             ```
-            ## 🤖 Claude review — follow-up
+            ## 🤖 Claude review — verification
+
+            Checked `abc1234..def5678`.
 
             | Finding | Status |
             |---|---|
-            | 🚨 Original headline of finding 1 | ✅ Fixed |
-            | 🐛 Original headline of finding 2 | ⚠️ Partial — *one-line note on what's still missing* |
-            | 🧹 Original headline of finding 3 | ❌ Not addressed |
-            | 🔁 New regression introduced by the fix | 🆕 New (see inline comment) |
+            | 💥 `Storage::put()` returns bool, not a path | ✅ Fixed |
+            | 🚨 Permit scans on the public disk | ⚠️ Partial — the old files are still there |
 
-            (Summary sentence: "All previous findings addressed, one new regression — see below."
-            Or: "Ready to merge.")
+            Nothing new broken. (2 findings settled earlier.)
             ```
 
             Statuses:
-            - ✅ **Fixed** — the prior finding is fully resolved in the new code.
-            - ⚠️ **Partial** — the fix addressed part of the issue but introduced a new bug or
-              missed a case. Add a one-line note saying *what* is still wrong.
-            - ❌ **Not addressed** — the prior finding is still present unchanged.
-            - 🆕 **New** — a brand-new finding from this push (not seen in a prior review).
+            - ✅ **Fixed** — the prior finding is resolved in the new code.
+            - ⚠️ **Partial** — the fix missed a case or half-solved it. Say in one line what
+              is still wrong.
+            - ❌ **Not addressed** — still present, unchanged.
+            - 🆕 **New** — a regression the fix introduced. Inline comment required.
 
-            **Check whether a "fix" introduced a new bug elsewhere** — multiple prior PRs on
-            this repo fixed one direction and broken another. The status table is where you call
-            those out as ⚠️ Partial with a note.
+            If nothing in your scope changed, the whole comment is one line — "No changes in
+            scope since `abc1234`." Do not pad it with a table.
 
-            If the PR is now clean (all previous findings fixed, no new ones), say so explicitly
-            — the author should feel acknowledged when they nail it.
+            When everything is fixed and nothing is broken, say so plainly and warmly. The
+            author should feel acknowledged when they nail it.
 
             # Comment template
 
@@ -390,8 +477,10 @@ jobs:
 
             - Be specific. Cite file paths and line numbers.
             - Verify whether a "fix" introduces a new bug elsewhere — multiple prior PRs have
-              fixed one direction and broken another.
-            - Don't invent issues to look thorough. A clean PR deserves a short approval.
+              fixed one direction and broken another. In Mode B this is the job, but stay
+              inside the scope boundary defined above.
+            - Don't invent issues to look thorough. A clean PR deserves a short approval, and
+              a verification run with nothing to report deserves one line.
             - The full architecture standard, with worked examples and the open backlog, lives in
               `docs/architecture-review.md` — read §1 if you need detail on the layering rules or
               the rich-model goal. This prompt is the short version; that file is the source of
