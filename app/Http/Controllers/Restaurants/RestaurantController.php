@@ -19,7 +19,7 @@ class RestaurantController extends Controller
         $dto = new RegisterRestaurant(
             ownerId: auth()->id(),
             name: $request->validated('name'),
-            permitScan: $file->get(),
+            permitScanTempPath: $file->getRealPath(),
             permitScanName: $file->getClientOriginalName(),
             landline_number: $request->validated('landline_number'),
             city: $request->validated('city'),

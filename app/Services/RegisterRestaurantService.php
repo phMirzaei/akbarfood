@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\PermitStorage;
 use App\DTOs\RegisterRestaurant;
 use App\Enums\UserRole;
 use App\Models\Restaurant\Restaurant;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class RegisterRestaurantService
 {
     public function __construct(
-        private FileStorageService $fileStorageService,
+        private PermitStorage $permitStorage,
     )
     {
 
@@ -19,7 +20,7 @@ class RegisterRestaurantService
     public function execute(RegisterRestaurant $registerRestaurant)
     {
         DB::transaction(function () use ($registerRestaurant) {
-            $permitPath=$this->fileStorageService->store($registerRestaurant->permitScan, $registerRestaurant->permitScanName);
+            $permitPath=$this->permitStorage->store($registerRestaurant->permitScanTempPath, $registerRestaurant->permitScanName);
             DB::afterRollBack(fn () => Storage::disk('local')->delete($permitPath));
             $restaurant = Restaurant::create([
                 'name' => $registerRestaurant->name,

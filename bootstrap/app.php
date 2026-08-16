@@ -112,4 +112,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'دسترسی غیر مجاز',
             ], 403)
         );
+        $exceptions->render(
+            fn(RuntimeException $e) => response()->json([
+                'message' => 'ذخیره مجوز رستوران با شکست مواجه شد.',
+            ],500)
+        );
     })->create();

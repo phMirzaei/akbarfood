@@ -8,7 +8,9 @@ class FileStorageService
 {
     public function store(string $contents,string $originalName):string
     {
-return Storage::disk('local')->put('permits/'.$originalName,$contents);
+        $path='permits/'.$originalName;
+ Storage::disk('local')->put($path,$contents);
+ return $path;
 }
 
     public function delete(string $path):void
