@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(NotificationService::class, TelegramNotificationService::class);
-        $this->app->bind(PermitStorage::class,LocalPermitStorage::class);
+        $this->app->bind(PermitStorage::class, LocalPermitStorage::class);
     }
 
     public function boot(): void

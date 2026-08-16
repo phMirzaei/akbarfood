@@ -6,15 +6,16 @@ use Illuminate\Support\Facades\Storage;
 
 class FileStorageService
 {
-    public function store(string $contents,string $originalName):string
+    public function store(string $contents, string $originalName): string
     {
-        $path='permits/'.$originalName;
- Storage::disk('local')->put($path,$contents);
- return $path;
-}
+        $path = 'permits/'.$originalName;
+        Storage::disk('local')->put($path, $contents);
 
-    public function delete(string $path):void
+        return $path;
+    }
+
+    public function delete(string $path): void
     {
         Storage::disk('local')->delete($path);
-}
+    }
 }

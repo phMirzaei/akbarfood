@@ -13,14 +13,12 @@ class RegisterRestaurantService
 {
     public function __construct(
         private PermitStorage $permitStorage,
-    )
-    {
+    ) {}
 
-    }
     public function execute(RegisterRestaurant $registerRestaurant)
     {
         DB::transaction(function () use ($registerRestaurant) {
-            $permitPath=$this->permitStorage->store($registerRestaurant->permitScanTempPath, $registerRestaurant->permitScanName);
+            $permitPath = $this->permitStorage->store($registerRestaurant->permitScanTempPath, $registerRestaurant->permitScanName);
             DB::afterRollBack(fn () => Storage::disk('local')->delete($permitPath));
             $restaurant = Restaurant::create([
                 'name' => $registerRestaurant->name,

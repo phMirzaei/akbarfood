@@ -7,9 +7,9 @@ interface PermitStorage
     public function store(
         string $tempPath,
         string $originalName,
-    ):string;
+    ): string;
 
     public function delete(
         string $path,
-    ):void;
+    ): void;
 }

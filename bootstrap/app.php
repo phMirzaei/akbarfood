@@ -113,8 +113,8 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 403)
         );
         $exceptions->render(
-            fn(RuntimeException $e) => response()->json([
+            fn (RuntimeException $e) => response()->json([
                 'message' => 'ذخیره مجوز رستوران با شکست مواجه شد.',
-            ],500)
+            ], 500)
         );
     })->create();
