@@ -44,19 +44,27 @@ jobs:
             This workflow runs on every push. Most runs are NOT reviews. Decide which
             mode you are in before you do anything else.
 
-            List the PR's existing comments, both kinds, and look for ones authored by
-            `claude`:
+            Look at the PR's **inline review comments** — and only those:
 
             ```
-            gh api repos/{owner}/{repo}/issues/{pr}/comments --jq '.[] | {user: .user.login, body: .body}'
-            gh api repos/{owner}/{repo}/pulls/{pr}/comments --jq '.[] | {id, path, line, user: .user.login, body: .body}'
+            gh api repos/{owner}/{repo}/pulls/{pr}/comments \
+              --jq '.[] | {id, path, line, user: .user.login, commit: .original_commit_id, body: .body}'
             ```
 
-            **Mode A — initial review.** You have never commented on this PR. Review the
-            full PR diff. This is the *only* run that reviews broadly.
+            In every `gh api` call in this prompt, `{owner}` and `{repo}` are substituted by
+            `gh` automatically — leave them exactly as written. `{pr}` is **not**; replace it
+            yourself with the number in `<pr_number>` above.
 
-            **Mode B — verification.** You have commented before. **You are not reviewing
-            the PR again.** You answer exactly two questions:
+            **Ignore the PR-level comment when deciding your mode.** A comment from you
+            always exists there — the workflow creates it as a progress placeholder before
+            you start running — so it proves nothing about whether you have reviewed before.
+            Inline comments are the only reliable signal.
+
+            **Mode A — initial review.** No inline comments from `claude` on this PR. Review
+            the full PR diff. This is the *only* run that reviews broadly.
+
+            **Mode B — verification.** Inline comments from `claude` already exist. **You
+            are not reviewing the PR again.** You answer exactly two questions:
 
             1. Is each finding you raised earlier actually fixed?
             2. Did those fixes break anything new?
@@ -81,10 +89,8 @@ jobs:
               --jq 'map(select(.user.login | startswith("claude"))) | sort_by(.created_at) | last | .original_commit_id'
             ```
 
-            That SHA is where you last looked. If it comes back empty — your previous run
-            found nothing, so there are no inline comments — fall back to the newest commit
-            that is older than your last PR-level comment, and say in the status comment
-            that your scope is approximate.
+            That SHA is where you last looked. You are in Mode B, so at least one inline
+            comment exists and this always returns something.
 
             ## Mode B — what you are allowed to look at
 
