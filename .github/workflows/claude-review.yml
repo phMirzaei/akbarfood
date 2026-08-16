@@ -14,6 +14,11 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
+    # Skip when a bot initiated the run — the action rejects bot actors anyway,
+    # and re-reviewing Claude's own fixup commits adds no signal. Matches on
+    # github.actor (not triggering_actor) because that is the field the action
+    # checks, and it stays the original initiator across re-runs.
+    if: ${{ !endsWith(github.actor, '[bot]') }}
     steps:
       - uses: actions/checkout@v4
         with:
