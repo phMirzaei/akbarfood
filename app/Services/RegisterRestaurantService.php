@@ -7,7 +7,6 @@ use App\DTOs\RegisterRestaurant;
 use App\Enums\UserRole;
 use App\Models\Restaurant\Restaurant;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class RegisterRestaurantService
 {
@@ -19,7 +18,7 @@ class RegisterRestaurantService
     {
         DB::transaction(function () use ($registerRestaurant) {
             $permitPath = $this->permitStorage->store($registerRestaurant->permitScanTempPath, $registerRestaurant->permitScanName);
-            DB::afterRollBack(fn () => Storage::disk('local')->delete($permitPath));
+            DB::afterRollBack(fn () => $this->permitStorage->delete($permitPath));
             $restaurant = Restaurant::create([
                 'name' => $registerRestaurant->name,
                 'permit_scan' => $permitPath,

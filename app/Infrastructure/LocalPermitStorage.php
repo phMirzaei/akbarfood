@@ -3,7 +3,7 @@
 namespace App\Infrastructure;
 
 use App\Contracts\PermitStorage;
-use App\Exceptions\RuntimeException;
+use App\Exceptions\PermitStorageException;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,7 +13,7 @@ class LocalPermitStorage implements PermitStorage
     {
         $path = Storage::disk('local')->putFileAs('permits', new File($tempPath), $originalName);
         if ($path === false) {
-            throw new RuntimeException;
+            throw new PermitStorageException;
         }
 
         return $path;

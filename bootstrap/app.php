@@ -12,6 +12,7 @@ use App\Exceptions\OtpNotFoundException;
 use App\Exceptions\OtpTooManyAttemptsException;
 use App\Exceptions\OtpTooManyRequestException;
 use App\Exceptions\PaymentFailedException;
+use App\Exceptions\PermitStorageException;
 use App\Exceptions\RestaurantNotApprovedException;
 use App\Exceptions\UnauthorizedException;
 use App\Exceptions\UnauthorizedOrderActionException;
@@ -113,7 +114,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 403)
         );
         $exceptions->render(
-            fn (RuntimeException $e) => response()->json([
+            fn (PermitStorageException $e) => response()->json([
                 'message' => 'ذخیره مجوز رستوران با شکست مواجه شد.',
             ], 500)
         );
