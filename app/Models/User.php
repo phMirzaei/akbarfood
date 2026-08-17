@@ -80,4 +80,17 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->role === UserRole::Owner;
     }
+
+    public function owns(Restaurant $restaurant): bool
+    {
+        return $this->restaurants()
+            ->wherePivot('role', UserRole::Owner->value)
+            ->whereKey($restaurant->getKey())
+            ->exists();
+    }
+
+    public function ownsOrder(Order $order): bool
+    {
+        return $order->user_id === $this->id;
+    }
 }

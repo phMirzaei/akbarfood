@@ -7,13 +7,15 @@ use App\Exceptions\OrderAlreadyPaidException;
 use App\Exceptions\UnauthorizedOrderActionException;
 use App\Models\Order\Order;
 use App\Models\Payment\Payment;
+use App\Models\User;
 
 class RequestPaymentService
 {
     public function execute(RequestPayment $requestPayment)
     {
         $order = Order::findOrFail($requestPayment->orderId);
-        if ($requestPayment->userId !== $order->user_id) {
+        $actor = User::findOrFail($requestPayment->actorId);
+        if (! $actor->ownsOrder($order)) {
             throw new UnauthorizedOrderActionException;
         }
         if (! $order->isPending()) {

@@ -8,6 +8,7 @@ use App\Exceptions\OrderAlreadyPaidException;
 use App\Exceptions\PaymentFailedException;
 use App\Exceptions\UnauthorizedOrderActionException;
 use App\Models\Payment\Payment;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class VerifyPaymentService
@@ -15,7 +16,8 @@ class VerifyPaymentService
     public function execute(VerifyPayment $verifyPayment)
     {
         $payment = Payment::findOrFail($verifyPayment->paymentId);
-        if ($verifyPayment->userId !== $payment->order->user_id) {
+        $actor = User::findOrFail($payment->actorId);
+        if (! $actor->ownsOrder($payment->order)) {
             throw new UnauthorizedOrderActionException;
         }
 

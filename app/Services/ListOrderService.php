@@ -10,7 +10,7 @@ class ListOrderService
     public function execute(ListOrder $listOrder)
     {
         return Order::with('items')
-            ->where('user_id', $listOrder->userId)
+            ->where('user_id', $listOrder->actorId)
             ->get();
     }
 }
