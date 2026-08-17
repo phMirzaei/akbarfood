@@ -15,11 +15,12 @@ class RestaurantController extends Controller
 {
     public function register(RegisterRequest $request, RegisterRestaurantService $service): JsonResponse
     {
-        $path = $request->file('permit_scan')->store('permits', 'local');
+        $file = $request->file('permit_scan');
         $dto = new RegisterRestaurant(
             ownerId: auth()->id(),
             name: $request->validated('name'),
-            permit_scan: $path,
+            permitScanTempPath: $file->getRealPath(),
+            permitScanName: $file->getClientOriginalName(),
             landline_number: $request->validated('landline_number'),
             city: $request->validated('city'),
             street: $request->validated('street'),

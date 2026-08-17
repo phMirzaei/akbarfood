@@ -7,7 +7,8 @@ final readonly class RegisterRestaurant
     public function __construct(
         public int $ownerId,
         public string $name,
-        public string $permit_scan,
+        public string $permitScanTempPath,
+        public string $permitScanName,
         public string $landline_number,
         public string $city,
         public string $street,
