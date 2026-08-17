@@ -2,10 +2,10 @@
 
 namespace App\Infrastructure;
 
-use App\Contracts\NotificationService;
+use App\Contracts\Notifier;
 use Illuminate\Support\Facades\Http;
 
-class TelegramNotification implements NotificationService
+class TelegramNotification implements Notifier
 {
     public function send(string $phone, string $message): void
     {

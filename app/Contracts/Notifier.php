@@ -2,7 +2,7 @@
 
 namespace App\Contracts;
 
-interface NotificationService
+interface Notifier
 {
     public function send(string $phone, string $message): void;
 }

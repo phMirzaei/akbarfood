@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Contracts\NotificationService;
+use App\Contracts\Notifier;
 use App\DTOs\RequestPhoneNumberVerification;
 use App\Exceptions\OtpBlockedException;
 use App\Exceptions\OtpTooManyRequestException;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 class RequestPhoneNumberVerificationService
 {
     public function __construct(
-        private NotificationService $notificationService,
+        private Notifier $notificationService,
     ) {}
 
     public function execute(RequestPhoneNumberVerification $requestPhoneNumberVerification): void

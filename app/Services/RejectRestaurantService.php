@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Contracts\NotificationService;
+use App\Contracts\Notifier;
 use App\DTOs\RejectRestaurant;
 use App\Exceptions\UnauthorizedException;
 use App\Models\Restaurant\Restaurant;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class RejectRestaurantService
 {
     public function __construct(
-        private NotificationService $notificationService,
+        private Notifier $notificationService,
     ) {}
 
     public function execute(RejectRestaurant $rejectRestaurant)
