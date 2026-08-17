@@ -26,13 +26,18 @@ class OrderController extends Controller
     public function listOrder(ListOrderService $listOrderService): JsonResponse
     {
         return response()->json(
-            $listOrderService->execute(new ListOrder(auth()->id())),
+            $listOrderService->execute(new ListOrder(
+                actorId: auth()->id(),
+            )),
         );
     }
 
     public function cancelOrder(CancelOrderService $cancelOrderService, Order $order): JsonResponse
     {
-        $cancelOrder = new CancelOrder(orderId: $order->id, userId: auth()->id());
+        $cancelOrder = new CancelOrder(
+            orderId: $order->id,
+            actorId: auth()->id()
+        );
         $cancelOrderService->execute($cancelOrder);
 
         return response()->json([

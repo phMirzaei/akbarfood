@@ -16,7 +16,7 @@ class PaymentController extends Controller
     public function sendRequestPayment(RequestPaymentService $requestPaymentService, Order $order): JsonResponse
     {
         $requestPayment = new RequestPayment(
-            userId: auth()->id(),
+            actorId: auth()->id(),
             orderId: $order->id
         );
         $requestPaymentService->execute($requestPayment);
@@ -29,7 +29,7 @@ class PaymentController extends Controller
     public function verifyPayment(VerifyPaymentService $verifyPaymentService, Payment $payment): JsonResponse
     {
         $verifyPayment = new VerifyPayment(
-            userId: auth()->id(),
+            actorId: auth()->id(),
             paymentId: $payment->id
         );
         $payment = $verifyPaymentService->execute($verifyPayment);

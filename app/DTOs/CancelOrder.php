@@ -6,6 +6,6 @@ final readonly class CancelOrder
 {
     public function __construct(
         public int $orderId,
-        public int $userId,
+        public int $actorId,
     ) {}
 }
