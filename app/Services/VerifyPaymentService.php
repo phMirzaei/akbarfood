@@ -16,7 +16,7 @@ class VerifyPaymentService
     public function execute(VerifyPayment $verifyPayment)
     {
         $payment = Payment::findOrFail($verifyPayment->paymentId);
-        $actor = User::findOrFail($payment->actorId);
+        $actor = User::findOrFail($verifyPayment->actorId);
         if (! $actor->ownsOrder($payment->order)) {
             throw new UnauthorizedOrderActionException;
         }
