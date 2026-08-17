@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\PaymentGateway;
 use App\Contracts\PermitStorage;
+use App\Infrastructure\FakePaymentGateway;
 use App\Infrastructure\LocalPermitStorage;
 use App\Services\NotificationService;
 use App\Services\TelegramNotificationService;
