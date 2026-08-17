@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\NotificationService;
 use App\DTOs\RequestPhoneNumberVerification;
 use App\Exceptions\OtpBlockedException;
 use App\Exceptions\OtpTooManyRequestException;

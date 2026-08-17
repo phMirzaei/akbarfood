@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\NotificationService;
 use App\DTOs\ApproveRestaurant;
 use App\Exceptions\UnauthorizedException;
 use App\Models\Restaurant\Restaurant;
