@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\PaymentGateway;
 use App\DTOs\VerifyPayment;
 use App\Exceptions\OrderAlreadyCancelledException;
 use App\Exceptions\OrderAlreadyPaidException;
@@ -13,6 +14,10 @@ use Illuminate\Support\Facades\DB;
 
 class VerifyPaymentService
 {
+    public function __construct(
+        private PaymentGateway $paymentGateway,
+    ) {}
+
     public function execute(VerifyPayment $verifyPayment)
     {
         $payment = Payment::findOrFail($verifyPayment->paymentId);
@@ -33,7 +38,7 @@ class VerifyPaymentService
 
         DB::transaction(function () use ($payment) {
             $payment->markAsPaid(
-                (string) random_int(50000, 100000)
+                $this->paymentGateway->verify($payment),
             );
             $payment->save();
 
