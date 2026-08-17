@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Infrastructure;
 
+use App\Contracts\Notifier;
 use Illuminate\Support\Facades\Http;
 
-class TelegramNotificationService implements NotificationService
+class TelegramNotification implements Notifier
 {
     public function send(string $phone, string $message): void
     {
