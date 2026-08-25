@@ -2,17 +2,14 @@
 
 namespace App\Services;
 
-use App\Contracts\Notifier;
 use App\DTOs\ApproveRestaurant;
 use App\Exceptions\UnauthorizedException;
+use App\Jobs\SendNotification;
 use App\Models\Restaurant\Restaurant;
 use App\Models\User;
 
 class ApproveRestaurantService
 {
-    public function __construct(
-        private Notifier $notificationService) {}
-
     public function execute(ApproveRestaurant $approveRestaurant)
     {
         $operator = User::findOrFail($approveRestaurant->actorId);
@@ -26,6 +23,6 @@ class ApproveRestaurantService
         $restaurant->approve();
         $restaurant->save();
         $owner = $restaurant->owner()->first();
-        $this->notificationService->send($owner->phone, 'درخواست ثبت رستوران شما تایید شد.');
+        SendNotification::dispatch($owner->phone, 'درخواست ثبت رستوران شما تایید شد.');
     }
 }
