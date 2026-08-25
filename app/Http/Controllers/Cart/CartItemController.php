@@ -17,14 +17,13 @@ use Illuminate\Http\JsonResponse;
 
 class CartItemController extends Controller
 {
-    public function addItemToCart(AddItemToCartRequest $request, AddItemToCartService $addItemToCartService,Restaurant $restaurantId): JsonResponse
+    public function addItemToCart(AddItemToCartRequest $request, AddItemToCartService $addItemToCartService, Restaurant $restaurant): JsonResponse
     {
 
         $cartItem = new AddItemToCart(
             userId: auth()->id(),
             menu_id: $request->validated('menu_id'),
             quantity: $request->validated('quantity'),
-            restaurantId: $restaurantId->id()
         );
         $addItemToCartService->execute($cartItem);
 
