@@ -2,19 +2,15 @@
 
 namespace App\Services;
 
-use App\Contracts\Notifier;
 use App\DTOs\RequestPhoneNumberVerification;
 use App\Exceptions\OtpBlockedException;
 use App\Exceptions\OtpTooManyRequestException;
+use App\Jobs\SendNotification;
 use App\Models\Otp;
 use Illuminate\Support\Facades\Hash;
 
 class RequestPhoneNumberVerificationService
 {
-    public function __construct(
-        private Notifier $notificationService,
-    ) {}
-
     public function execute(RequestPhoneNumberVerification $requestPhoneNumberVerification): void
     {
         $otp = Otp::where('phone', $requestPhoneNumberVerification->phone)->first();
@@ -39,7 +35,7 @@ class RequestPhoneNumberVerificationService
                 ],
             ]
         );
-        $this->notificationService->send($requestPhoneNumberVerification->phone, "کد تایید {$code}میباشد.");
+        SendNotification::dispatch($requestPhoneNumberVerification->phone, "کد تایید {$code}میباشد.");
 
     }
 }
