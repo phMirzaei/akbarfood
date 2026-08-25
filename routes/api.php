@@ -20,7 +20,7 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
 
-        Route::post('restaurant-register', [RestaurantController::class, 'register']);
+        Route::post('restaurants', [RestaurantController::class, 'register']);
 
         Route::middleware('admin')->group(function () {
             Route::post('users/{userId}/promote-operator', [OperatorController::class, 'promoteOperator']);
