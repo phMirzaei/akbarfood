@@ -19,7 +19,7 @@ class AddItemToCartRequest extends FormRequest
                 'required',
                 'integer',
                 Rule::exists('menus', 'id')->
-                    where('restaurant_id', $this->route('restaurant')),
+                    where('restaurant_id', $this->route('restaurant')->id),
             ],
             'quantity' => 'required|integer|min:1',
         ];

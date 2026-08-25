@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Cart\AddItemToCartRequest;
 use App\Http\Requests\Cart\UpdateCartItemRequest;
 use App\Models\Cart\CartItem;
+use App\Models\Restaurant\Restaurant;
 use App\Services\AddItemToCartService;
 use App\Services\RemoveCartItemService;
 use App\Services\UpdateCartItemService;
@@ -16,13 +17,14 @@ use Illuminate\Http\JsonResponse;
 
 class CartItemController extends Controller
 {
-    public function addItemToCart(AddItemToCartRequest $request, AddItemToCartService $addItemToCartService): JsonResponse
+    public function addItemToCart(AddItemToCartRequest $request, AddItemToCartService $addItemToCartService,Restaurant $restaurantId): JsonResponse
     {
 
         $cartItem = new AddItemToCart(
             userId: auth()->id(),
             menu_id: $request->validated('menu_id'),
             quantity: $request->validated('quantity'),
+            restaurantId: $restaurantId->id()
         );
         $addItemToCartService->execute($cartItem);
 
