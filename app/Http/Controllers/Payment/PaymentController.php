@@ -25,7 +25,7 @@ class PaymentController extends Controller
         return response()->json([
             'message' => 'در حال ارسال شما به درگاه پرداخت...',
             'data' => new PaymentResource($payment),
-        ]);
+        ], 201);
     }
 
     public function verifyPayment(VerifyPaymentService $verifyPaymentService, Payment $payment): JsonResponse
