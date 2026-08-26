@@ -6,6 +6,7 @@ use App\DTOs\CancelOrder;
 use App\DTOs\CreateOrder;
 use App\DTOs\ListOrder;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OrderResource;
 use App\Models\Order\Order;
 use App\Services\CancelOrderService;
 use App\Services\CreateOrderService;
@@ -26,9 +27,11 @@ class OrderController extends Controller
     public function listOrder(ListOrderService $listOrderService): JsonResponse
     {
         return response()->json(
-            $listOrderService->execute(new ListOrder(
-                actorId: auth()->id(),
-            )),
+            OrderResource::collection(
+                $listOrderService->execute(new ListOrder(
+                    actorId: auth()->id(),
+                )),
+            )
         );
     }
 
