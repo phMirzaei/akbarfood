@@ -8,12 +8,14 @@ use App\DTOs\UpdateMenuItem;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Menu\MenuItemRequest;
 use App\Http\Requests\Menu\UpdateMenuItemRequest;
+use App\Http\Resources\MenuItemResource;
 use App\Models\Menu\Menu;
 use App\Models\Restaurant\Restaurant;
 use App\Services\AddMenuItemService;
 use App\Services\RemoveMenuItemService;
 use App\Services\UpdateMenuItemService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class MenuController extends Controller
 {
@@ -37,12 +39,10 @@ class MenuController extends Controller
         ], 201);
     }
 
-    public function listMenuItems(Restaurant $restaurant): JsonResponse
+    public function listMenuItems(Restaurant $restaurant): AnonymousResourceCollection
     {
-        return response()->json([
-            'نام رستوران:' => $restaurant->name,
-            'منو:' => $restaurant->menuItems,
-        ]);
+        return MenuItemResource::collection(
+            $restaurant->menuItems()->where('is_available', true)->paginate(10));
     }
 
     public function updateMenuItems(UpdateMenuItemRequest $request, UpdateMenuItemService $updateMenuItemService, Restaurant $restaurant, Menu $menuItem): JsonResponse

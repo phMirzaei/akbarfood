@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Payment;
 use App\DTOs\RequestPayment;
 use App\DTOs\VerifyPayment;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PaymentResource;
 use App\Models\Order\Order;
 use App\Models\Payment\Payment;
 use App\Services\RequestPaymentService;
@@ -36,7 +37,7 @@ class PaymentController extends Controller
 
         return response()->json([
             'message' => 'سفارش شما با موفقیت پرداخت شد.',
-            'پرداخت' => $payment,
+            'payment' => new PaymentResource($payment),
 
         ]);
 
