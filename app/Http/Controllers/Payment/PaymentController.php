@@ -20,11 +20,12 @@ class PaymentController extends Controller
             actorId: auth()->id(),
             orderId: $order->id
         );
-        $requestPaymentService->execute($requestPayment);
+        $payment = $requestPaymentService->execute($requestPayment);
 
         return response()->json([
             'message' => 'در حال ارسال شما به درگاه پرداخت...',
-        ]);
+            'data' => new PaymentResource($payment),
+        ], 201);
     }
 
     public function verifyPayment(VerifyPaymentService $verifyPaymentService, Payment $payment): JsonResponse
