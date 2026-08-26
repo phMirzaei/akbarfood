@@ -87,8 +87,8 @@ class OrderPricingTest extends TestCase
 
         $payment = app(RequestPaymentService::class)->execute(
             new RequestPayment(
-                userId: $user->id,
-                order: $order
+                actorId: $user->id,
+                orderID: $order
             )
         );
 

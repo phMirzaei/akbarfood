@@ -23,6 +23,7 @@ class CreateOrderService
             $order = Order::create([
                 'user_id' => $createOrder->userId,
                 'cart_id' => $cart->id,
+                'restaurant_id' => $cart->restaurant_id,
                 'status' => 'pending',
                 'total_price' => $total_price,
             ]);

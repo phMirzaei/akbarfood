@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('cart_id')->constrained()->onDelete('cascade');
+            $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
             $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
             $table->unsignedBigInteger('total_price');
             $table->timestamps();

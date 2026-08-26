@@ -24,6 +24,7 @@ class CartItemController extends Controller
             userId: auth()->id(),
             menu_id: $request->validated('menu_id'),
             quantity: $request->validated('quantity'),
+            restaurantId: $restaurant->id,
         );
         $addItemToCartService->execute($cartItem);
 

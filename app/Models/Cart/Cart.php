@@ -3,6 +3,7 @@
 namespace App\Models\Cart;
 
 use App\Models\Order\Order;
+use App\Models\Restaurant\Restaurant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Cart extends Model
 {
-    public $fillable = ['user_id', 'updated_at', 'created_at'];
+    public $fillable = ['user_id', 'restaurant_id', 'updated_at', 'created_at'];
 
     public function items(): HasMany
     {
@@ -27,6 +28,11 @@ class Cart extends Model
     public function order(): HasOne
     {
         return $this->hasOne(Order::class);
+    }
+
+    public function restaurant(): BelongsTo
+    {
+        return $this->belongsTo(Restaurant::class);
     }
 
     public function total(): int

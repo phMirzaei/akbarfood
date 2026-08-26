@@ -17,7 +17,9 @@ class OrderController extends Controller
 {
     public function createOrder(CreateOrderService $createOrderService): JsonResponse
     {
-        $createOrderService->execute(new CreateOrder(auth()->id()));
+        $createOrderService->execute(new CreateOrder(
+            userId: auth()->id(),
+        ));
 
         return response()->json([
             'message' => 'سفارش شما ثبت و در انتظار پرداخت می باشد.',
