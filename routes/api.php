@@ -40,12 +40,11 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::post('restaurants/{restaurant}/cart-items', [CartItemController::class, 'addItemToCart']);
-
         Route::get('carts', [CartController::class, 'listCartItems']);
         Route::put('cart-items/{cartItem}', [CartItemController::class, 'updateCartItem']);
         Route::delete('cart-items/{cartItem}', [CartItemController::class, 'removeItemFromCart']);
 
-        Route::post('orders', [OrderController::class, 'createOrder']);
+        Route::post('restaurants/{restaurant}/orders', [OrderController::class, 'createOrder']);
         Route::get('orders', [OrderController::class, 'listOrder']);
         Route::patch('orders/{order}/cancel', [OrderController::class, 'cancelOrder']);
 

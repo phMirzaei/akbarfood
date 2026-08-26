@@ -6,5 +6,6 @@ final readonly class CreateOrder
 {
     public function __construct(
         public int $userId,
+        public int $restaurantId,
     ) {}
 }

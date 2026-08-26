@@ -8,5 +8,6 @@ final readonly class AddItemToCart
         public int $userId,
         public int $menu_id,
         public int $quantity,
+        public int $restaurantId,
     ) {}
 }

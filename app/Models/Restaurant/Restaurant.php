@@ -5,7 +5,9 @@ namespace App\Models\Restaurant;
 use App\Enums\RestaurantStatus;
 use App\Enums\UserRole;
 use App\Enums\VendorType;
+use App\Models\Cart\Cart;
 use App\Models\Menu\Menu;
+use App\Models\Order\Order;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -32,6 +34,16 @@ class Restaurant extends Model
     public function menuItems(): HasMany
     {
         return $this->hasMany(Menu::class, 'restaurant_id');
+    }
+
+    public function carts(): HasMany
+    {
+        return $this->hasMany(Cart::class, 'restaurant_id');
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'restaurant_id');
     }
 
     public function owner(): BelongsToMany

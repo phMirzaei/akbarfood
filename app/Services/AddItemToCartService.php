@@ -14,10 +14,16 @@ class AddItemToCartService
     {
         DB::transaction(function () use ($addItemToCart) {
             $menu = Menu::findOrFail($addItemToCart->menu_id);
+            if ($menu->restaurant_id !== $addItemToCart->restaurantId) {
+                throw new MenuItemNotAvailableException;
+            }
             if (! $menu->isAvailable()) {
                 throw new MenuItemNotAvailableException;
             }
-            $cart = Cart::firstOrCreate(['user_id' => $addItemToCart->userId]);
+            $cart = Cart::firstOrCreate([
+                'user_id' => $addItemToCart->userId,
+                'restaurant_id' => $addItemToCart->restaurantId,
+            ]);
             $item = $cart->items()->lockForUpdate()->where('menu_id', $addItemToCart->menu_id)->first();
             if ($item) {
                 $item->quantity = $item->quantity + $addItemToCart->quantity;

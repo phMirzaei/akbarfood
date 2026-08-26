@@ -5,6 +5,7 @@ namespace App\Models\Order;
 use App\Enums\OrderStatus;
 use App\Models\Cart\Cart;
 use App\Models\Payment\Payment;
+use App\Models\Restaurant\Restaurant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
-    protected $fillable = ['user_id', 'cart_id', 'status', 'total_price', 'created_at', 'updated_at'];
+    protected $fillable = ['user_id', 'cart_id', 'restaurant_id', 'status', 'total_price', 'created_at', 'updated_at'];
 
     protected function casts(): array
     {
@@ -30,6 +31,11 @@ class Order extends Model
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class);
+    }
+
+    public function restaurant(): BelongsTo
+    {
+        return $this->belongsTo(Restaurant::class);
     }
 
     public function items(): HasMany
