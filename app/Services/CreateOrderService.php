@@ -15,6 +15,7 @@ class CreateOrderService
         return DB::transaction(function () use ($createOrder) {
             $cart = Cart::with('items.menu')
                 ->where('user_id', $createOrder->userId)
+                ->where('restaurant_id', $createOrder->restaurantId)
                 ->firstOrFail();
             if ($cart->items->isEmpty()) {
                 throw new CartIsEmptyException;
@@ -23,7 +24,7 @@ class CreateOrderService
             $order = Order::create([
                 'user_id' => $createOrder->userId,
                 'cart_id' => $cart->id,
-                'restaurant_id' => $cart->restaurant_id,
+                'restaurant_id' => $createOrder->restaurantId,
                 'status' => 'pending',
                 'total_price' => $total_price,
             ]);

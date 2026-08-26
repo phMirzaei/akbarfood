@@ -14,6 +14,9 @@ class AddItemToCartService
     {
         DB::transaction(function () use ($addItemToCart) {
             $menu = Menu::findOrFail($addItemToCart->menu_id);
+            if ($menu->restaurant_id !== $addItemToCart->restaurantId) {
+                throw new MenuItemNotAvailableException;
+            }
             if (! $menu->isAvailable()) {
                 throw new MenuItemNotAvailableException;
             }

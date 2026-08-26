@@ -8,6 +8,7 @@ use App\DTOs\ListOrder;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Order\Order;
+use App\Models\Restaurant\Restaurant;
 use App\Services\CancelOrderService;
 use App\Services\CreateOrderService;
 use App\Services\ListOrderService;
@@ -15,10 +16,11 @@ use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
 {
-    public function createOrder(CreateOrderService $createOrderService): JsonResponse
+    public function createOrder(CreateOrderService $createOrderService, Restaurant $restaurant): JsonResponse
     {
         $createOrderService->execute(new CreateOrder(
             userId: auth()->id(),
+            restaurantId: $restaurant->id
         ));
 
         return response()->json([
